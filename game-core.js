@@ -115,6 +115,16 @@
     return answers.includes(normalizedGuess);
   }
 
+  function cleanAiMessages(messages) {
+    if (!Array.isArray(messages)) {
+      return [];
+    }
+    return messages
+      .map((message) => String(message || "").trim())
+      .filter(Boolean)
+      .slice(0, 3);
+  }
+
   function clueForTurn(word, attempts) {
     if (attempts < word.clues.length) {
       return word.clues[attempts];
@@ -218,7 +228,7 @@
     return game.messages[0];
   }
 
-  function submitGuess(game, guess) {
+  function submitGuess(game, guess, aiMessages) {
     if (game.status !== "playing") {
       return game;
     }
@@ -260,6 +270,14 @@
     }
 
     const clue = clueForTurn(game.word, next.attempts);
+    const generatedMessages = cleanAiMessages(aiMessages);
+    if (generatedMessages.length > 0) {
+      generatedMessages.forEach((message) => {
+        next.messages.push(makeMessage("ai", message));
+      });
+      return next;
+    }
+
     next.messages.push(makeMessage("ai", preludeForTurn(game.mode, next.attempts)));
     next.messages.push(makeMessage("ai", `${playfulNudge(game.mode, next.attempts)} ${clue}`));
     return next;
@@ -276,6 +294,7 @@
     createGame,
     submitGuess,
     normalizeGuess,
+    isCorrectGuess,
     getModeConfig,
     getInitialClue,
     modes

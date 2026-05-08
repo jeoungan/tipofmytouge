@@ -6,11 +6,13 @@ const {
   submitGuess,
   normalizeGuess,
   getModeConfig,
-  getInitialClue
+  getInitialClue,
+  isCorrectGuess
 } = globalThis.GameCore;
 
 assert.equal(normalizeGuess("  의자요!! "), "의자");
 assert.equal(normalizeGuess("괴델 불완전성 정리인가?"), "괴델불완전성정리");
+assert.equal(isCorrectGuess("체어", createGame("normal", 0).word), true);
 
 assert.equal(getModeConfig("normal").maxReplies, 5);
 assert.equal(getModeConfig("hard").maxReplies, 5);
@@ -58,7 +60,7 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
 
 {
   const game = createGame("normal", 0);
-  const result = submitGuess(game, "모르겠는데?");
+  const result = submitGuess(game, "모르겠는데?", ["아, 그그...", "야 그거 말고. 새로 생각난 건 책상 근처에 붙어 다니는 그 물건이야."]);
   const newMessages = result.messages.slice(game.messages.length);
   assert.equal(newMessages[0].sender, "player");
   assert.equal(newMessages[1].sender, "ai");

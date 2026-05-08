@@ -14,6 +14,9 @@ assert.match(html, /<script src="app\.js"><\/script>/);
 
 assert.match(app, /GameCore\.createGame/);
 assert.match(app, /GameCore\.submitGuess/);
+assert.match(app, /requestAiReply/);
+assert.match(app, /\/api\/ai-reply/);
+assert.doesNotMatch(app, /OPENAI_API_KEY/);
 assert.match(app, /mode-card/);
 assert.match(app, /challengeRecords/);
 assert.match(app, /모르겠는데\?/);

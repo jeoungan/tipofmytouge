@@ -4,6 +4,7 @@
   let lastMode = "normal";
   let seedCounter = 0;
   let inputOpen = false;
+  let waitingForAi = false;
 
   function escapeHtml(value) {
     return String(value)
@@ -57,6 +58,62 @@
   function nextStage() {
     game = GameCore.createGame(lastMode, seedCounter);
     seedCounter += 1;
+    inputOpen = false;
+    waitingForAi = false;
+    renderGame();
+  }
+
+  async function requestAiReply(currentGame, guess) {
+    if (window.location.protocol === "file:") {
+      return null;
+    }
+    if (GameCore.isCorrectGuess(guess, currentGame.word)) {
+      return null;
+    }
+    if (currentGame.remainingReplies === 1) {
+      return null;
+    }
+
+    try {
+      const response = await fetch("/api/ai-reply", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          mode: currentGame.mode,
+          word: {
+            answer: currentGame.word.answer,
+            aliases: currentGame.word.aliases,
+            clues: currentGame.word.clues
+          },
+          guess,
+          history: currentGame.messages,
+          attempts: currentGame.attempts + 1,
+          remainingReplies:
+            currentGame.remainingReplies === null ? null : currentGame.remainingReplies - 1
+        })
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      return Array.isArray(data.messages) ? data.messages : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function submitPlayerGuess(guess) {
+    waitingForAi = true;
+    inputOpen = false;
+    renderGame();
+
+    const aiMessages = await requestAiReply(game, guess);
+    game = GameCore.submitGuess(game, guess, aiMessages);
+    waitingForAi = false;
     inputOpen = false;
     renderGame();
   }
@@ -126,7 +183,7 @@
   }
 
   function renderFloatingChoices() {
-    if (game.status !== "playing") {
+    if (game.status !== "playing" || waitingForAi) {
       return "";
     }
 
@@ -149,10 +206,10 @@
         <input
           name="guess"
           autocomplete="off"
-          placeholder="${inputOpen ? "메시지 입력" : "AI가 말하는 중..."}"
-          ${inputOpen && game.status === "playing" ? "" : "disabled"}
+          placeholder="${waitingForAi ? "AI가 말 고르는 중..." : inputOpen ? "메시지 입력" : "AI가 말하는 중..."}"
+          ${inputOpen && game.status === "playing" && !waitingForAi ? "" : "disabled"}
         />
-        <button class="${inputOpen ? "send-button" : "round-button"}" data-action="composer-answer" ${inputOpen && game.status === "playing" ? "" : "disabled"}>
+        <button class="${inputOpen ? "send-button" : "round-button"}" data-action="composer-answer" ${inputOpen && game.status === "playing" && !waitingForAi ? "" : "disabled"}>
           ${inputOpen ? "전송" : "#"}
         </button>
       </form>
@@ -198,9 +255,7 @@
     app.querySelector('[data-action="back"]').addEventListener("click", renderModePicker);
     app.querySelector('[data-action="next"]')?.addEventListener("click", nextStage);
     app.querySelector('[data-action="hint"]')?.addEventListener("click", () => {
-      game = GameCore.submitGuess(game, "모르겠는데?");
-      inputOpen = false;
-      renderGame();
+      submitPlayerGuess("모르겠는데?");
     });
     app.querySelector('[data-action="answer"]')?.addEventListener("click", () => {
       inputOpen = true;
@@ -215,9 +270,7 @@
       if (!guess) {
         return;
       }
-      game = GameCore.submitGuess(game, guess);
-      inputOpen = false;
-      renderGame();
+      submitPlayerGuess(guess);
     });
 
     app.querySelector(".input-panel input")?.focus();
