@@ -14,10 +14,18 @@ assert.match(app, /GameCore\.createGame/);
 assert.match(app, /GameCore\.submitGuess/);
 assert.match(app, /mode-card/);
 assert.match(app, /challengeRecords/);
+assert.match(app, /모르겠는데\?/);
+assert.match(app, /답변 입력/);
+assert.match(app, /data-action="hint"/);
+assert.match(app, /data-action="answer"/);
+assert.match(app, /input-panel/);
 
 assert.match(css, /\.phone/);
 assert.match(css, /\.bubble\.ai/);
 assert.match(css, /\.bubble\.player/);
+assert.match(css, /\.choice-bar/);
+assert.match(css, /\.input-panel/);
+assert.match(css, /grid-template-rows: auto auto 1fr auto/);
 assert.match(css, /@media/);
 
 console.log("html static tests passed");

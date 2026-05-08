@@ -3,6 +3,7 @@
   let game = null;
   let lastMode = "normal";
   let seedCounter = 0;
+  let inputOpen = false;
 
   function escapeHtml(value) {
     return String(value)
@@ -49,12 +50,14 @@
     lastMode = mode;
     game = GameCore.createGame(mode, seedCounter);
     seedCounter += 1;
+    inputOpen = false;
     renderGame();
   }
 
   function nextStage() {
     game = GameCore.createGame(lastMode, seedCounter);
     seedCounter += 1;
+    inputOpen = false;
     renderGame();
   }
 
@@ -104,6 +107,28 @@
     `;
   }
 
+  function renderActionArea() {
+    if (game.status !== "playing") {
+      return "";
+    }
+
+    if (!inputOpen) {
+      return `
+        <div class="choice-bar">
+          <button class="choice-button ghost" data-action="hint">모르겠는데?</button>
+          <button class="choice-button primary" data-action="answer">답변 입력</button>
+        </div>
+      `;
+    }
+
+    return `
+      <form class="input-panel">
+        <input name="guess" autocomplete="off" placeholder="메시지 입력" />
+        <button>전송</button>
+      </form>
+    `;
+  }
+
   function renderGame() {
     app.innerHTML = `
       <section class="phone chat-phone">
@@ -119,10 +144,7 @@
           ${renderMessages()}
         </div>
         ${renderResult()}
-        <form class="composer">
-          <input name="guess" autocomplete="off" placeholder="답을 입력해봐" ${game.status === "playing" ? "" : "disabled"} />
-          <button ${game.status === "playing" ? "" : "disabled"}>전송</button>
-        </form>
+        ${renderActionArea()}
       </section>
     `;
 
@@ -131,9 +153,18 @@
 
     app.querySelector('[data-action="back"]').addEventListener("click", renderModePicker);
     app.querySelector('[data-action="next"]')?.addEventListener("click", nextStage);
+    app.querySelector('[data-action="hint"]')?.addEventListener("click", () => {
+      game = GameCore.submitGuess(game, "모르겠는데?");
+      inputOpen = false;
+      renderGame();
+    });
+    app.querySelector('[data-action="answer"]')?.addEventListener("click", () => {
+      inputOpen = true;
+      renderGame();
+    });
 
-    const form = app.querySelector(".composer");
-    form.addEventListener("submit", (event) => {
+    const form = app.querySelector(".input-panel");
+    form?.addEventListener("submit", (event) => {
       event.preventDefault();
       const input = form.elements.guess;
       const guess = input.value.trim();
@@ -141,12 +172,11 @@
         return;
       }
       game = GameCore.submitGuess(game, guess);
+      inputOpen = false;
       renderGame();
-      const nextInput = app.querySelector(".composer input");
-      nextInput?.focus();
     });
 
-    app.querySelector(".composer input")?.focus();
+    app.querySelector(".input-panel input")?.focus();
   }
 
   renderModePicker();

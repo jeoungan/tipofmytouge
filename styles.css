@@ -95,7 +95,7 @@ input {
 
 .chat-phone {
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-rows: auto auto 1fr auto;
   background: #b7d3e9;
 }
 
@@ -210,22 +210,51 @@ input {
   white-space: nowrap;
 }
 
-.composer {
+.choice-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 10px;
+  background: #f8f8f8;
+  border-top: 1px solid rgba(32, 33, 36, 0.12);
+}
+
+.choice-button {
+  min-height: 46px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.choice-button.ghost {
+  border: 1px solid rgba(32, 33, 36, 0.16);
+  background: #ffffff;
+  color: #202124;
+}
+
+.choice-button.primary {
+  border: 0;
+  background: #2f6f9f;
+  color: #ffffff;
+}
+
+.input-panel {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
   padding: 10px;
-  background: #edf4f8;
+  background: #f8f8f8;
+  border-top: 1px solid rgba(32, 33, 36, 0.12);
 }
 
-.composer input {
+.input-panel input {
   min-width: 0;
   border: 1px solid rgba(32, 33, 36, 0.18);
   border-radius: 8px;
-  padding: 12px;
+  padding: 11px 12px;
+  min-height: 44px;
 }
 
-.composer button {
+.input-panel button {
   border: 0;
   border-radius: 8px;
   padding: 0 16px;
