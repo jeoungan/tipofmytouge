@@ -23,6 +23,8 @@ assert.match(app, /chat-room/);
 assert.match(app, /floating-choices/);
 assert.match(app, /composer-bar/);
 assert.match(app, /AI가 말하는 중/);
+assert.match(app, /기억난 건/);
+assert.doesNotMatch(app, /정답은/);
 assert.match(app, /renderFloatingChoices/);
 assert.match(app, /renderComposer/);
 assert.match(app, /renderControlDeck/);

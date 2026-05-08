@@ -42,7 +42,9 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
   assert.equal(game.status, "failed");
   assert.equal(game.remainingReplies, 0);
   assert.equal(game.result.type, "failed");
-  assert.match(game.messages.at(-1).text, /이걸 못 맞히네/);
+  assert.match(game.messages.at(-1).text, /아! 이거 그거다 그거\. 의자!/);
+  assert.match(game.messages.at(-1).text, /갑자기 기억났/);
+  assert.doesNotMatch(game.messages.at(-1).text, /정답은/);
 }
 
 {

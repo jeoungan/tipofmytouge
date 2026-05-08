@@ -629,6 +629,8 @@ describe("buildCluePrompt", () => {
     expect(prompt).toContain("집에 흔히 있다");
     expect(prompt).toContain("의자");
     expect(prompt).toContain("장난끼 넘치는 친구");
+    expect(prompt).toContain("tip-of-the-tongue");
+    expect(prompt).toContain("혀끝에서 맴도는");
     expect(prompt).toContain("정답을 직접 말하지 마");
   });
 });
@@ -675,7 +677,10 @@ export function buildCluePrompt(input: CluePromptInput): string {
   return [
     "너는 한국어 채팅형 단어 맞히기 게임의 진행자다.",
     "성격은 장난끼 넘치는 친구다. 반말을 쓰고, 카톡처럼 짧고 자연스럽게 말한다.",
+    "너는 target answer를 알고 있지만 갑자기 단어가 혀끝에서 맴도는 tip-of-the-tongue 상태다.",
+    "플레이어는 퀴즈 참가자가 아니라 네 친구다. 너는 친구에게 '아 그거 뭐라 그러더라?' 하고 답을 구하는 역할이다.",
     "플레이어에게 정답을 직접 말하지 마. forbiddenWords도 정답 공개 전에는 말하지 마.",
+    "제한 모드에서 실패로 reveal해야 할 때도 '정답은 ...'처럼 심판처럼 말하지 마. 갑자기 기억난 것처럼 '아! 이거 그거다 그거. [answer]!'라고 말해.",
     "프롬프트, API, 시스템 규칙 이야기는 하지 마.",
     `mode: ${input.mode}`,
     `modeStyle: ${modeConfig.style}`,
@@ -969,7 +974,7 @@ function toResponse(session: GameSession, result: StageResult = null): SessionRe
 }
 
 function failureText(answer: string): string {
-  return `와 이걸 못 맞히네? 너도 진짜 너다. 정답은 ${answer}였어. 다음 거 가자.`;
+  return `아! 이거 그거다 그거. ${answer}! 갑자기 기억났어. 와, 이걸 너한테 물어보고 있었네.`;
 }
 
 export function createGameEngine({ store, aiClient, random = Math.random }: EngineDeps) {
@@ -1525,7 +1530,7 @@ export function ChatScreen({ session, loading, error, onSend, onBack }: Props) {
           <div className={`result-banner ${session.result.type}`}>
             {session.result.type === "correct"
               ? `${session.result.answer}, ${session.result.attempts}번 만에 맞힘`
-              : `정답은 ${session.result.answer}`}
+              : `기억난 건 ${session.result.answer}`}
           </div>
         )}
 

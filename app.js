@@ -115,7 +115,7 @@
     const text =
       game.result.type === "correct"
         ? `${game.result.answer} · ${game.result.attempts}번 만에 맞힘`
-        : `정답은 ${game.result.answer}`;
+        : `기억난 건 ${game.result.answer}`;
 
     return `
       <div class="result ${game.result.type}">

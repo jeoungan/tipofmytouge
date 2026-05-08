@@ -13,6 +13,7 @@ The player opens the web game, chooses a mode, and enters a phone-sized chat scr
 The intended tone is playful and casual Korean banter:
 
 - The AI feels like a mischievous friend, not a teacher.
+- The AI knows the target word, but is role-playing a tip-of-the-tongue moment: it can almost remember the word and is asking a friend for help.
 - The AI starts with broad, funny, sometimes annoyingly vague clues.
 - The player can push back, complain, or guess normally.
 - The AI reacts to the player's message while still moving the game forward.
@@ -38,7 +39,7 @@ Normal mode is the main rules-based mode.
 - AI responses after the initial clue: 5 maximum.
 - Win condition: player guesses the answer before the response limit ends.
 - Failure condition: player does not guess within the limit.
-- Failure response: the AI gives a light teasing message, reveals the answer, and advances to the next stage.
+- Failure response: the AI gives a light teasing message, then acts as if the word suddenly came back to memory, e.g. "아! 이거 그거다 그거. 의자!", and advances to the next stage.
 
 ### Hard
 
@@ -132,7 +133,7 @@ Example:
 6. Server checks whether the message is a correct guess.
 7. If correct, server returns a success response and mode-specific stage result.
 8. If incorrect and the mode still allows more responses, server asks OpenAI for the next clue or reaction.
-9. If incorrect and the mode limit is exhausted, server reveals the answer with a playful teasing message and advances to the next stage.
+9. If incorrect and the mode limit is exhausted, server has the AI suddenly remember the answer in-character with a playful teasing message and advances to the next stage.
 
 ## Answer Checking
 
@@ -167,9 +168,11 @@ The host should:
 
 - Use casual Korean banter.
 - Sound like a mischievous friend.
+- Role-play someone who knows the word but is in a tip-of-the-tongue state and is asking the player because the word will not come out.
 - Give hints based on allowed facts.
 - React to the player naturally.
 - Avoid saying the answer or forbidden words until reveal.
+- When revealing after a failed limited stage, never say "정답은 ..." or sound like a quiz judge; instead sound like the word suddenly came back: "아! 이거 그거다 그거. [answer]!"
 - Avoid breaking character with meta explanations about prompts, APIs, or system rules.
 
 Mode-specific style:
