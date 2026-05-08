@@ -57,6 +57,19 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
 }
 
 {
+  const game = createGame("normal", 0);
+  const result = submitGuess(game, "모르겠는데?");
+  const newMessages = result.messages.slice(game.messages.length);
+  assert.equal(newMessages[0].sender, "player");
+  assert.equal(newMessages[1].sender, "ai");
+  assert.equal(newMessages[2].sender, "ai");
+  assert.match(newMessages[1].text, /아|그그|잠깐|뭐였/);
+  assert.ok(newMessages[1].text.length <= 18);
+  assert.match(newMessages[2].text, /야|답답|똑바로|아니아니|그거 말고/);
+  assert.doesNotMatch(newMessages[2].text, /입니다|해주세요|알려드릴게/);
+}
+
+{
   let game = createGame("challenge", 0);
   game = submitGuess(game, "모르겠어");
   game = submitGuess(game, "괴델 불완전성 정리");
@@ -66,11 +79,15 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
 
 {
   let game = createGame("easy", 0);
+  const aiTexts = [];
   for (let index = 0; index < 8; index += 1) {
     game = submitGuess(game, `아니 ${index}`);
+    aiTexts.push(...game.messages.slice(-2).filter((message) => message.sender === "ai").map((message) => message.text));
   }
   assert.equal(game.status, "playing");
   assert.equal(game.remainingReplies, null);
+  const repeatedAiTexts = aiTexts.filter((text, index) => aiTexts.indexOf(text) !== index);
+  assert.deepEqual(repeatedAiTexts, []);
 }
 
 console.log("game-core tests passed");

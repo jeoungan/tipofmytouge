@@ -75,5 +75,9 @@ assert.match(plan, /Do not say "정보"/);
 assert.match(plan, /Do not say "힌트"/);
 assert.doesNotMatch(spec, /Pace information progressively/);
 assert.doesNotMatch(plan, /more specific information/);
+assert.match(spec, /Do not reuse the same clue/);
+assert.match(spec, /short filler message/);
+assert.match(plan, /Do not reuse the same clue/);
+assert.match(plan, /short filler message/);
 
 console.log("html static tests passed");

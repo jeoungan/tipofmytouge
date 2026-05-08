@@ -595,6 +595,8 @@ Expected: commit succeeds.
 Prompt tone guard:
 
 - Do not say "정보". Do not say "힌트". Do not say "정답은". Do not say "이거에 대한" in in-character chat.
+- Do not reuse the same clue as the main content of a later turn; history can be referenced only as a side detail while adding a new angle.
+- The host may send a short filler message first, such as "아, 그그..." or "뭐였지.", then send the real thought in the next bubble.
 - Do not announce clue delivery or game-progress narration; the host should sound like the word is slowly coming back.
 
 - [ ] **Step 1: Write failing prompt tests**
@@ -691,6 +693,8 @@ export function buildCluePrompt(input: CluePromptInput): string {
     "플레이어에게 정답을 직접 말하지 마. forbiddenWords도 정답 공개 전에는 말하지 마.",
     "제한 모드에서 실패로 reveal해야 할 때도 '정답은 ...'처럼 심판처럼 말하지 마. 갑자기 기억난 것처럼 '아! 이거 그거다 그거. [answer]!'라고 말해.",
     "Do not say \"정보\". Do not say \"힌트\". Do not say \"정답은\". Do not say \"이거에 대한\" in character.",
+    "Do not reuse the same clue as the main content of a later turn; use conversation history so each new response adds a fresh angle.",
+    "You may send a short filler message first, then send the actual thought as a separate chat bubble.",
     "Do not announce that you are giving clues or releasing information; speak like the word is slowly coming back.",
     "Pacing rule: early turns must be broad, flustered, and self-aware; later turns must add concrete details and grow slightly irritated.",
     "Early turns should often begin with '아니아니, 그거 말고' and admit the description was too broad.",

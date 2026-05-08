@@ -116,7 +116,42 @@
   }
 
   function clueForTurn(word, attempts) {
-    return word.clues[Math.min(attempts, word.clues.length - 1)];
+    if (attempts < word.clues.length) {
+      return word.clues[attempts];
+    }
+
+    const extraCluesByAnswer = {
+      우산: [
+        "손잡이 잡고 머리 위에 들고 다니는 그 물건 있잖아. 비 오는 날 괜히 사람들 팔 아프게 하는 거.",
+        "접으면 길쭉하고 펴면 위로 둥글게 몸집 커지는 그 친구. 아 답답해, 이름만 안 나와.",
+        "편의점 앞에 비 오면 갑자기 잘 팔리는 그거. 없으면 그냥 젖은 사람 되는 거.",
+        "가방에 넣으면 물기 때문에 안쪽 다 축축하게 만드는 그 배신자 같은 물건."
+      ],
+      "괴델의 불완전성 정리": [
+        "이거 논리학 쪽에서 수학한테 야 너 완벽한 척 그만해, 하고 태클 거는 그 결과야.",
+        "자기 안에서 참인 말을 전부 증명하겠다는 꿈을 되게 얄밉게 꺾어버린 그거.",
+        "충분히 센 공리 체계 얘기 나오고, 일관성이랑 완전성이 같이 얽혀서 사람 머리 아프게 하는 그놈.",
+        "오스트리아 논리학자 이름 붙은 그 정리인데, 아 이름이 목구멍에서 걸려서 안 나와."
+      ]
+    };
+
+    const extraClues = extraCluesByAnswer[word.answer] || [
+      "아니 여기까지 왔으면 거의 냄새라도 맡아야지. 이름만 계속 도망가네.",
+      "내가 같은 말 또 하면 진짜 재미없잖아. 다른 쪽으로 가보면, 이건 일상에서 꽤 자주 만나는 쪽이야.",
+      "아 답답해. 단어는 아는데 입 밖으로 안 튀어나오는 그 기분 알지?"
+    ];
+    return extraClues[(attempts - word.clues.length) % extraClues.length];
+  }
+
+  function preludeForTurn(mode, attempts) {
+    const preludes = {
+      easy: ["아, 그그...", "잠깐만.", "뭐였지.", "아 씨, 그거.", "어우 답답해.", "아니 진짜.", "야 잠깐.", "그 뭐냐.", "아 또.", "입에 맴도네."],
+      normal: ["아, 그그...", "아니 잠깐.", "뭐였더라.", "아 답답해.", "야, 잠깐.", "아 진짜.", "그 뭐냐.", "목끝인데.", "아 또 막혀.", "잠깐 들어봐."],
+      hard: ["아, 그...", "잠깐, 목끝.", "아 미치겠네.", "그 단어가.", "야 들어봐.", "아니 이거.", "하, 답답해.", "목까지 왔어.", "잠깐만.", "그 이름이."],
+      challenge: ["아니 그...", "하, 이거.", "잠깐만.", "아 목끝에.", "야 이거.", "아 머리 아파.", "그 논문.", "아니 진짜.", "거의 왔어.", "입 밖으로."]
+    };
+    const options = preludes[mode] || preludes.normal;
+    return options[(Math.max(attempts, 1) - 1) % options.length];
   }
 
   function playfulNudge(mode, attempts) {
@@ -201,6 +236,7 @@
         answer: game.word.answer,
         attempts: next.attempts
       };
+      next.messages.push(makeMessage("ai", "아."));
       next.messages.push(makeMessage("ai", `아 맞다! 그래, ${game.word.answer}! ${next.attempts}번 만에 맞혔네. 야 너 좀 치네?`));
       if (game.mode === "challenge") {
         next.challengeRecords = [...game.challengeRecords, { answer: game.word.answer, attempts: next.attempts }];
@@ -218,11 +254,13 @@
         type: "failed",
         answer: game.word.answer
       };
+      next.messages.push(makeMessage("ai", "아."));
       next.messages.push(makeMessage("ai", `아! 이거 그거다 그거. ${game.word.answer}! 갑자기 기억났어. 와, 이걸 너한테 물어보고 있었네.`));
       return next;
     }
 
     const clue = clueForTurn(game.word, next.attempts);
+    next.messages.push(makeMessage("ai", preludeForTurn(game.mode, next.attempts)));
     next.messages.push(makeMessage("ai", `${playfulNudge(game.mode, next.attempts)} ${clue}`));
     return next;
   }
