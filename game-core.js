@@ -36,6 +36,30 @@
       ]
     },
     {
+      answer: "고양이",
+      aliases: ["냥이", "캣"],
+      mode: "easy",
+      clues: [
+        "야, 그거 있잖아. 집에서 지가 왕인 줄 아는 작은 털뭉치.",
+        "가끔 사람 무릎에 올라오는데, 지가 원할 때만 친한 척하는 그 친구.",
+        "발소리 조용하고, 높은 데 잘 올라가고, 눈이 밤에 좀 반짝이는 애.",
+        "상자만 보면 환장하고, 손으로 툭툭 치다가 갑자기 모르는 척하는 그 생물.",
+        "야 이걸 못 맞히면 좀 심하다. 야옹 하는 걔 있잖아."
+      ]
+    },
+    {
+      answer: "선글라스",
+      aliases: ["썬글라스", "색안경"],
+      mode: "easy",
+      clues: [
+        "그거 있잖아. 햇빛이 너무 나댈 때 얼굴에 걸치는 거.",
+        "눈 앞에 끼는데, 쓰면 괜히 좀 멋있는 척하게 되는 그 물건.",
+        "렌즈가 어둡고, 여름이나 운전할 때 사람들이 자주 쓰는 거.",
+        "눈부심 막아주는 건데, 밤에 쓰면 그냥 이상한 사람 되는 그거.",
+        "아니 눈 위에 쓰는 검은 안경 같은 거 있잖아."
+      ]
+    },
+    {
       answer: "의자",
       aliases: ["체어", "좌석"],
       mode: "normal",
@@ -49,6 +73,30 @@
       ]
     },
     {
+      answer: "자전거",
+      aliases: ["바이크", "사이클"],
+      mode: "normal",
+      clues: [
+        "야, 그거 뭐라 그러더라. 타고 다니는 건데 엔진은 없고 사람이 좀 고생하는 거.",
+        "두 바퀴가 있고, 발로 계속 돌려야 앞으로 가는 그 물건.",
+        "손잡이 잡고 균형 잡아야 하고, 처음 배우면 무릎 좀 까지는 친구야.",
+        "출퇴근이나 운동할 때도 쓰고, 길가에 묶어두면 괜히 불안한 그거.",
+        "페달 밟고 체인 돌아가고, 헬멧 쓰면 더 안전한 그 이동수단."
+      ]
+    },
+    {
+      answer: "엘리베이터",
+      aliases: ["승강기", "리프트"],
+      mode: "normal",
+      clues: [
+        "그거 있잖아. 건물 안에서 위아래로 사람 실어 나르는 거.",
+        "문이 자동으로 열리고 닫히는데, 가끔 너무 오래 안 와서 사람 빡치게 하는 그거.",
+        "버튼 누르면 층 숫자가 올라가거나 내려가고, 안에서 잠깐 어색해지는 공간.",
+        "계단 대신 타는 건데, 정전 나면 갑자기 무서워지는 그 물건.",
+        "아파트나 회사 건물에 거의 있고, 몇 층 갈지 누르는 그 작은 방 같은 거."
+      ]
+    },
+    {
       answer: "르네상스",
       aliases: ["문예부흥"],
       mode: "hard",
@@ -59,6 +107,30 @@
         "다빈치 같은 사람 떠올리면 방향은 맞아. 근데 이름이 혀끝에서 계속 미끄러지네.",
         "예술사 시간에 선생님이 칠판에 크게 써놓고, 시험에도 나오는 그 단어.",
         "아! 이거 그거다 그거. 르네상스! 아 이건 좀 어려웠다, 인정은 해줄게. 조금만."
+      ]
+    },
+    {
+      answer: "블루투스",
+      aliases: ["Bluetooth"],
+      mode: "hard",
+      clues: [
+        "그거 있잖아. 선 없이 기기끼리 붙여주는 건데 이름은 괜히 색깔이랑 이빨 느낌 나는 거.",
+        "이어폰이나 스피커 연결할 때 자주 쓰고, 가끔 페어링 안 돼서 사람 열받게 해.",
+        "근거리 무선 통신 쪽이고, 휴대폰 설정에 거의 항상 있는 그 기능.",
+        "로고도 좀 룬 문자처럼 생겼고, 이름 유래는 북유럽 왕 이름 쪽이었나 그럴걸.",
+        "무선 이어폰 처음 연결할 때 켜는 바로 그 기술 이름."
+      ]
+    },
+    {
+      answer: "테슬라",
+      aliases: ["Tesla"],
+      mode: "hard",
+      clues: [
+        "그거 있잖아. 전기차 하면 사람들이 바로 떠올리는 브랜드 중 하나.",
+        "차 안에 큰 화면 있고, 자율주행 얘기 나오면 맨날 같이 끌려나오는 그 회사.",
+        "일론 머스크랑 엮여 있고, 모델 3나 모델 Y 같은 이름도 있어.",
+        "충전소랑 전기차 이미지가 강하고, 주식 얘기할 때도 자주 등장하는 브랜드.",
+        "미국 전기차 회사인데 이름은 발명가 성에서 따온 그거."
       ]
     },
     {
@@ -123,6 +195,21 @@
       .map((message) => String(message || "").trim())
       .filter(Boolean)
       .slice(0, 3);
+  }
+
+  function clueTokens(clue) {
+    return String(clue)
+      .replace(/[!?.,~…]/gu, " ")
+      .split(/\s+/u)
+      .map((token) => token.trim())
+      .filter((token) => token.length >= 3)
+      .filter((token) => !["아니", "그거", "있잖아", "되게", "너무", "대체로", "경우가", "많고"].includes(token));
+  }
+
+  function includesClueDetail(messages, clue) {
+    const combined = messages.join(" ");
+    const tokens = clueTokens(clue);
+    return tokens.some((token) => combined.includes(token));
   }
 
   function clueForTurn(word, attempts) {
@@ -275,6 +362,9 @@
       generatedMessages.forEach((message) => {
         next.messages.push(makeMessage("ai", message));
       });
+      if (!includesClueDetail(generatedMessages, clue)) {
+        next.messages.push(makeMessage("ai", `${playfulNudge(game.mode, next.attempts)} ${clue}`));
+      }
       return next;
     }
 

@@ -20,6 +20,18 @@ assert.equal(getModeConfig("easy").maxReplies, null);
 assert.equal(getModeConfig("challenge").maxReplies, null);
 
 {
+  const easyAnswers = new Set([0, 1, 2].map((index) => createGame("easy", index).word.answer));
+  const normalAnswers = new Set([0, 1, 2].map((index) => createGame("normal", index).word.answer));
+  const hardAnswers = new Set([0, 1, 2].map((index) => createGame("hard", index).word.answer));
+  assert.ok(easyAnswers.size >= 3);
+  assert.ok(normalAnswers.size >= 3);
+  assert.ok(hardAnswers.size >= 3);
+  assert.deepEqual([...easyAnswers], ["우산", "고양이", "선글라스"]);
+  assert.deepEqual([...normalAnswers], ["의자", "자전거", "엘리베이터"]);
+  assert.deepEqual([...hardAnswers], ["르네상스", "블루투스", "테슬라"]);
+}
+
+{
   const game = createGame("normal", 0);
   assert.equal(game.mode, "normal");
   assert.equal(game.status, "playing");
@@ -69,6 +81,13 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
   assert.ok(newMessages[1].text.length <= 18);
   assert.match(newMessages[2].text, /야|답답|똑바로|아니아니|그거 말고/);
   assert.doesNotMatch(newMessages[2].text, /입니다|해주세요|알려드릴게/);
+}
+
+{
+  const game = createGame("normal", 0);
+  const result = submitGuess(game, "모르겠는데?", ["아, 그그...", "아 답답해. 말은 맴도는데 딱 안 나온다."]);
+  const aiMessages = result.messages.slice(game.messages.length + 1).map((message) => message.text);
+  assert.match(aiMessages.join("\n"), /방 안|자연스럽게|당연해서|이름이 안 나와/);
 }
 
 {

@@ -79,6 +79,8 @@ function buildInstructions() {
     "Do not say the target answer or aliases before the reveal.",
     "Do not say \"정보\". Do not say \"힌트\". Do not say \"정답은\". Do not say \"이거에 대한\" in character.",
     "Do not reuse the same clue as the main content of a later turn; use the conversation history so each new response adds a fresh angle.",
+    "Every non-filler response must include one concrete clue about appearance, use, location, material, category, brand, origin, or a common situation.",
+    "Do not send only emotional stalling like '아 답답해' without a concrete clue.",
     "Prefer progressive memory: early turns are broad and flustered; later turns mention more concrete material, use, location, parts, category, or examples.",
     "You may send a short filler message first, then send the actual thought as a separate chat bubble.",
     "The short filler should feel like the sentence is stuck, for example '아, 그그...' or '뭐였지.'",
@@ -87,12 +89,22 @@ function buildInstructions() {
   ].join("\n");
 }
 
+function fallbackClueForPayload(payload) {
+  const clues = Array.isArray(payload.word?.clues) ? payload.word.clues : [];
+  if (clues.length === 0) {
+    return "아니, 뭔가 손에 잡히는 특징이 있긴 한데 말이 안 나온다.";
+  }
+  const index = Math.min(Math.max(Number(payload.attempts || 1), 1), clues.length - 1);
+  return clues[index] || clues.at(-1);
+}
+
 function buildInput(payload) {
   return {
     mode: payload.mode,
     answer: payload.word?.answer,
     aliases: payload.word?.aliases || [],
     existingClues: payload.word?.clues || [],
+    fallbackClue: fallbackClueForPayload(payload),
     playerGuess: payload.guess,
     attempts: payload.attempts,
     remainingReplies: payload.remainingReplies,
@@ -154,7 +166,7 @@ async function handleAiReply(request, response) {
   const data = await openAiResponse.json();
   const messages = parseModelMessages(data.output_text || "");
   jsonResponse(response, 200, {
-    messages: messages.length > 0 ? messages : ["아, 그그...", "아 답답해. 말은 맴도는데 딱 안 나온다."]
+    messages: messages.length > 0 ? messages : ["아, 그그...", fallbackClueForPayload(payload)]
   });
 }
 
