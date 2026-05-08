@@ -159,6 +159,15 @@
     `;
   }
 
+  function renderControlDeck() {
+    return `
+      <div class="control-deck">
+        ${renderFloatingChoices()}
+        ${renderComposer()}
+      </div>
+    `;
+  }
+
   function renderGame() {
     app.innerHTML = `
       <section class="phone chat-phone chat-room">
@@ -179,8 +188,7 @@
           ${renderMessages()}
         </div>
         ${renderResult()}
-        ${renderFloatingChoices()}
-        ${renderComposer()}
+        ${renderControlDeck()}
       </section>
     `;
 

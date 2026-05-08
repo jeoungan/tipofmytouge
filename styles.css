@@ -96,7 +96,7 @@ input {
 .chat-phone {
   position: relative;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto 1fr;
   background: #b7d3e9;
 }
 
@@ -175,7 +175,7 @@ input {
 .chat-log {
   min-height: 0;
   overflow-y: auto;
-  padding: 18px 14px 132px;
+  padding: 18px 14px 214px;
 }
 
 .message-line {
@@ -299,15 +299,27 @@ input {
   white-space: nowrap;
 }
 
-.floating-choices {
+.control-deck {
   position: absolute;
-  left: 50%;
-  bottom: 92px;
-  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: grid;
+  gap: 10px;
+  padding: 0 14px 18px;
+  pointer-events: none;
+}
+
+.control-deck > * {
+  pointer-events: auto;
+}
+
+.floating-choices {
   width: min(78%, 320px);
   display: grid;
   gap: 6px;
-  transform: translateX(-50%);
+  justify-self: center;
 }
 
 .choice-button {
