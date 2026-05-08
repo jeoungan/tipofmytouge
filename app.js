@@ -125,30 +125,36 @@
     `;
   }
 
-  function renderActionArea() {
+  function renderFloatingChoices() {
     if (game.status !== "playing") {
       return "";
     }
 
-    if (!inputOpen) {
-      return `
-        <div class="floating-choices" aria-label="답변 선택지">
-          <button class="choice-button ghost" data-action="hint">모르겠는데?</button>
-          <button class="choice-button primary" data-action="answer">답변 입력</button>
-        </div>
-        <div class="composer-bar muted">
-          <button class="round-button" aria-label="추가">+</button>
-          <div class="composer-placeholder">AI가 말하는 중...</div>
-          <button class="round-button" aria-label="메뉴">#</button>
-        </div>
-      `;
+    if (inputOpen) {
+      return "";
     }
 
     return `
-      <form class="input-panel composer-bar">
+      <div class="floating-choices" aria-label="답변 선택지">
+        <button class="choice-button ghost" data-action="hint">모르겠는데?</button>
+        <button class="choice-button primary" data-action="answer">답변 입력</button>
+      </div>
+    `;
+  }
+
+  function renderComposer() {
+    return `
+      <form class="input-panel composer-bar ${inputOpen ? "active" : "muted"}">
         <button class="round-button" type="button" aria-label="추가">+</button>
-        <input name="guess" autocomplete="off" placeholder="메시지 입력" />
-        <button class="send-button">전송</button>
+        <input
+          name="guess"
+          autocomplete="off"
+          placeholder="${inputOpen ? "메시지 입력" : "AI가 말하는 중..."}"
+          ${inputOpen && game.status === "playing" ? "" : "disabled"}
+        />
+        <button class="${inputOpen ? "send-button" : "round-button"}" data-action="composer-answer" ${inputOpen && game.status === "playing" ? "" : "disabled"}>
+          ${inputOpen ? "전송" : "#"}
+        </button>
       </form>
     `;
   }
@@ -173,7 +179,8 @@
           ${renderMessages()}
         </div>
         ${renderResult()}
-        ${renderActionArea()}
+        ${renderFloatingChoices()}
+        ${renderComposer()}
       </section>
     `;
 
