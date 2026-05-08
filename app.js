@@ -174,10 +174,20 @@
         ? `${game.result.answer} · ${game.result.attempts}번 만에 맞힘`
         : `기억난 건 ${game.result.answer}`;
 
+    return `<span>${escapeHtml(text)}</span>`;
+  }
+
+  function renderResultAction() {
+    if (!game.result) {
+      return "";
+    }
+
     return `
-      <div class="result ${game.result.type}">
-        <span>${escapeHtml(text)}</span>
-        <button class="small-button" data-action="next">다음 문제</button>
+      <div class="result-action ${game.result.type}">
+        <div class="result ${game.result.type}">
+          ${renderResult()}
+        </div>
+        <button class="next-button" data-action="next">다음 문제</button>
       </div>
     `;
   }
@@ -219,6 +229,7 @@
   function renderControlDeck() {
     return `
       <div class="control-deck">
+        ${renderResultAction()}
         ${renderFloatingChoices()}
         ${renderComposer()}
       </div>
@@ -244,7 +255,6 @@
           <div class="date-chip">2026년 5월 8일 금요일</div>
           ${renderMessages()}
         </div>
-        ${renderResult()}
         ${renderControlDeck()}
       </section>
     `;
