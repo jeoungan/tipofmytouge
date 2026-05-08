@@ -69,5 +69,11 @@ assert.match(plan, /early turns/i);
 assert.match(plan, /later turns/i);
 assert.match(plan, /아니아니/);
 assert.match(plan, /똑바로/);
+assert.match(spec, /Do not say "정보"/);
+assert.match(spec, /Do not say "힌트"/);
+assert.match(plan, /Do not say "정보"/);
+assert.match(plan, /Do not say "힌트"/);
+assert.doesNotMatch(spec, /Pace information progressively/);
+assert.doesNotMatch(plan, /more specific information/);
 
 console.log("html static tests passed");

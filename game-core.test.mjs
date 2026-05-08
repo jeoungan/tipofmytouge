@@ -47,6 +47,7 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
   assert.match(aiReplies[1], /아니아니|그거 말고/);
   assert.match(aiReplies[3], /이것도 모르냐|똑바로|정신 차려/);
   assert.match(aiReplies[3], /다리|책상|식탁|몸을 맡기/);
+  assert.doesNotMatch(aiReplies.join("\n"), /정보|힌트|정답은|이거에 대한/);
   assert.equal(game.status, "failed");
   assert.equal(game.remainingReplies, 0);
   assert.equal(game.result.type, "failed");

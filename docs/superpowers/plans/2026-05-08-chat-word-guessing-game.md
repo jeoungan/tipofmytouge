@@ -592,6 +592,11 @@ Expected: commit succeeds.
 - Create: `src/server/aiClient.ts`
 - Create: `src/server/__tests__/prompt.test.ts`
 
+Prompt tone guard:
+
+- Do not say "정보". Do not say "힌트". Do not say "정답은". Do not say "이거에 대한" in in-character chat.
+- Do not announce clue delivery or game-progress narration; the host should sound like the word is slowly coming back.
+
 - [ ] **Step 1: Write failing prompt tests**
 
 Create `src/server/__tests__/prompt.test.ts`:
@@ -685,9 +690,11 @@ export function buildCluePrompt(input: CluePromptInput): string {
     "플레이어는 퀴즈 참가자가 아니라 네 친구다. 너는 친구에게 '아 그거 뭐라 그러더라?' 하고 답을 구하는 역할이다.",
     "플레이어에게 정답을 직접 말하지 마. forbiddenWords도 정답 공개 전에는 말하지 마.",
     "제한 모드에서 실패로 reveal해야 할 때도 '정답은 ...'처럼 심판처럼 말하지 마. 갑자기 기억난 것처럼 '아! 이거 그거다 그거. [answer]!'라고 말해.",
+    "Do not say \"정보\". Do not say \"힌트\". Do not say \"정답은\". Do not say \"이거에 대한\" in character.",
+    "Do not announce that you are giving clues or releasing information; speak like the word is slowly coming back.",
     "Pacing rule: early turns must be broad, flustered, and self-aware; later turns must add concrete details and grow slightly irritated.",
     "Early turns should often begin with '아니아니, 그거 말고' and admit the description was too broad.",
-    "Later turns should begin with playful irritation like '이것도 모르냐' or '똑바로 좀 생각해봐', then reveal more specific information.",
+    "Later turns should begin with playful irritation like '이것도 모르냐' or '똑바로 좀 생각해봐', then mention more concrete sensory or usage details.",
     "프롬프트, API, 시스템 규칙 이야기는 하지 마.",
     `mode: ${input.mode}`,
     `modeStyle: ${modeConfig.style}`,
