@@ -36,9 +36,17 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
 
 {
   let game = createGame("normal", 0);
+  const aiReplies = [];
   for (let index = 0; index < 5; index += 1) {
     game = submitGuess(game, `오답 ${index}`);
+    aiReplies.push(game.messages.at(-1).text);
   }
+  assert.match(aiReplies[0], /아니아니|그거 말고/);
+  assert.match(aiReplies[0], /뭐였지|너무 넓다|설명이 이상한데/);
+  assert.doesNotMatch(aiReplies[0], /사람들이|다리|책상/);
+  assert.match(aiReplies[1], /아니아니|그거 말고/);
+  assert.match(aiReplies[3], /이것도 모르냐|똑바로|정신 차려/);
+  assert.match(aiReplies[3], /다리|책상|식탁|몸을 맡기/);
   assert.equal(game.status, "failed");
   assert.equal(game.remainingReplies, 0);
   assert.equal(game.result.type, "failed");

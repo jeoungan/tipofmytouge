@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 const html = readFileSync("index.html", "utf8");
 const app = readFileSync("app.js", "utf8");
 const css = readFileSync("styles.css", "utf8");
+const spec = readFileSync("docs/superpowers/specs/2026-05-08-chat-word-guessing-game-design.md", "utf8");
+const plan = readFileSync("docs/superpowers/plans/2026-05-08-chat-word-guessing-game.md", "utf8");
 
 assert.match(html, /<html lang="ko">/);
 assert.match(html, /아, 그거 뭐라 그러더라/);
@@ -58,5 +60,14 @@ assert.match(css, /\.chat-log[\s\S]*padding: 18px 14px 214px/);
 assert.doesNotMatch(css, /\.floating-choices[\s\S]*position: absolute/);
 assert.doesNotMatch(css, /background: #050505/);
 assert.match(css, /@media/);
+
+assert.match(spec, /early turns/i);
+assert.match(spec, /later turns/i);
+assert.match(spec, /아니아니/);
+assert.match(spec, /똑바로/);
+assert.match(plan, /early turns/i);
+assert.match(plan, /later turns/i);
+assert.match(plan, /아니아니/);
+assert.match(plan, /똑바로/);
 
 console.log("html static tests passed");
