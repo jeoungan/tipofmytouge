@@ -67,7 +67,12 @@
         const time = index === 0 ? "오전 9:16" : "";
         const avatar =
           message.sender === "ai"
-            ? `<div class="avatar" aria-hidden="true">?</div>`
+            ? `
+              <div class="avatar default-profile" aria-hidden="true">
+                <span class="profile-head"></span>
+                <span class="profile-body"></span>
+              </div>
+            `
             : "";
         const meta =
           time && message.sender === "ai"
@@ -153,9 +158,9 @@
       <section class="phone chat-phone chat-room">
         <header class="chat-top">
           <button class="icon-button" data-action="back" aria-label="모드 선택으로 돌아가기">‹</button>
-          <div>
-            <strong>${GameCore.getModeConfig(game.mode).label}</strong>
-            <span>${renderStatusText()}</span>
+          <div class="chat-title-block">
+            <strong>어휘력이 좋은 지 나쁜 지 모르겠는 놈</strong>
+            <span class="header-meta">${GameCore.getModeConfig(game.mode).label} · ${renderStatusText()}</span>
           </div>
           <div class="top-actions" aria-hidden="true">
             <span>⌕</span>

@@ -23,6 +23,10 @@ assert.match(app, /chat-room/);
 assert.match(app, /floating-choices/);
 assert.match(app, /composer-bar/);
 assert.match(app, /AI가 말하는 중/);
+assert.match(app, /어휘력이 좋은 지 나쁜 지 모르겠는 놈/);
+assert.match(app, /header-meta/);
+assert.match(app, /default-profile/);
+assert.doesNotMatch(app, /<strong>\$\{GameCore\.getModeConfig\(game\.mode\)\.label\}<\/strong>/);
 
 assert.match(css, /\.phone/);
 assert.match(css, /\.bubble\.ai/);
@@ -31,7 +35,12 @@ assert.match(css, /\.input-panel/);
 assert.match(css, /\.chat-room/);
 assert.match(css, /\.floating-choices/);
 assert.match(css, /\.composer-bar/);
+assert.match(css, /\.header-meta/);
+assert.match(css, /\.default-profile/);
+assert.match(css, /\.profile-head/);
+assert.match(css, /\.profile-body/);
 assert.match(css, /background: #b7d3e9/);
+assert.match(css, /\.composer-bar[\s\S]*background: transparent/);
 assert.doesNotMatch(css, /background: #050505/);
 assert.match(css, /@media/);
 
