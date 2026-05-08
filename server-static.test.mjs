@@ -16,6 +16,8 @@ assert.match(server, /Bearer \$\{apiKey\}/);
 assert.match(server, /output_text/);
 assert.match(server, /Do not reuse the same clue/);
 assert.match(server, /Every non-filler response must include one concrete clue/);
+assert.match(server, /Do not sprinkle question marks/);
+assert.match(server, /sanitizeQuestionMarks/);
 assert.match(server, /fallbackClue/);
 assert.match(server, /short filler/);
 assert.match(server, /tip-of-the-tongue/);

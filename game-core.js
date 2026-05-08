@@ -192,9 +192,17 @@
       return [];
     }
     return messages
-      .map((message) => String(message || "").trim())
+      .map((message) => sanitizeQuestionMarks(String(message || "").trim()))
       .filter(Boolean)
       .slice(0, 3);
+  }
+
+  function sanitizeQuestionMarks(text) {
+    const questionCount = (text.match(/\?/gu) || []).length;
+    if (questionCount <= 1) {
+      return text.replace(/\?{2,}/gu, "?");
+    }
+    return text.replace(/\?+/gu, ".");
   }
 
   function clueTokens(clue) {

@@ -2,7 +2,7 @@
   const app = document.querySelector("#app");
   let game = null;
   let lastMode = "normal";
-  let seedCounter = 0;
+  let seedCounter = Math.floor(Math.random() * 100000);
   let inputOpen = false;
   let waitingForAi = false;
 
@@ -28,16 +28,18 @@
       .join("");
 
     app.innerHTML = `
-      <section class="phone intro-phone">
-        <div class="brand">
-          <span>OpenAI 말고도 일단</span>
-          <h1>아, 그거 뭐라 그러더라</h1>
-          <p>말을 못 하는 친구가 설명하는 걸 맞혀봐.</p>
-        </div>
-        <div class="mode-grid">
-          ${modeCards}
-        </div>
-      </section>
+      <div class="phone-frame-scene">
+        <section class="phone intro-phone">
+          <div class="brand">
+            <span>OpenAI 말고도 일단</span>
+            <h1>아, 그거 뭐라 그러더라</h1>
+            <p>말을 못 하는 친구가 설명하는 걸 맞혀봐.</p>
+          </div>
+          <div class="mode-grid">
+            ${modeCards}
+          </div>
+        </section>
+      </div>
     `;
 
     app.querySelectorAll(".mode-card").forEach((button) => {
@@ -238,25 +240,27 @@
 
   function renderGame() {
     app.innerHTML = `
-      <section class="phone chat-phone chat-room">
-        <header class="chat-top">
-          <button class="icon-button" data-action="back" aria-label="모드 선택으로 돌아가기">‹</button>
-          <div class="chat-title-block">
-            <strong>어휘력이 좋은 지 나쁜 지 모르겠는 놈</strong>
-            <span class="header-meta">${GameCore.getModeConfig(game.mode).label} · ${renderStatusText()}</span>
+      <div class="phone-frame-scene">
+        <section class="phone chat-phone chat-room">
+          <header class="chat-top">
+            <button class="icon-button" data-action="back" aria-label="모드 선택으로 돌아가기">‹</button>
+            <div class="chat-title-block">
+              <strong>어휘력이 좋은 지 나쁜 지 모르겠는 놈</strong>
+              <span class="header-meta">${GameCore.getModeConfig(game.mode).label} · ${renderStatusText()}</span>
+            </div>
+            <div class="top-actions" aria-hidden="true">
+              <span>⌕</span>
+              <span>☰</span>
+            </div>
+          </header>
+          ${renderChallengeRecords()}
+          <div class="chat-log" id="chat-log" aria-label="대화 내용">
+            <div class="date-chip">2026년 5월 8일 금요일</div>
+            ${renderMessages()}
           </div>
-          <div class="top-actions" aria-hidden="true">
-            <span>⌕</span>
-            <span>☰</span>
-          </div>
-        </header>
-        ${renderChallengeRecords()}
-        <div class="chat-log" id="chat-log" aria-label="대화 내용">
-          <div class="date-chip">2026년 5월 8일 금요일</div>
-          ${renderMessages()}
-        </div>
-        ${renderControlDeck()}
-      </section>
+          ${renderControlDeck()}
+        </section>
+      </div>
     `;
 
     const chatLog = app.querySelector("#chat-log");

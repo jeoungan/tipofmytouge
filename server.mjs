@@ -81,6 +81,7 @@ function buildInstructions() {
     "Do not reuse the same clue as the main content of a later turn; use the conversation history so each new response adds a fresh angle.",
     "Every non-filler response must include one concrete clue about appearance, use, location, material, category, brand, origin, or a common situation.",
     "Do not send only emotional stalling like '아 답답해' without a concrete clue.",
+    "Do not sprinkle question marks between phrases. Use at most one question mark in the whole response, and prefer periods or commas.",
     "Prefer progressive memory: early turns are broad and flustered; later turns mention more concrete material, use, location, parts, category, or examples.",
     "You may send a short filler message first, then send the actual thought as a separate chat bubble.",
     "The short filler should feel like the sentence is stuck, for example '아, 그그...' or '뭐였지.'",
@@ -116,13 +117,21 @@ function parseModelMessages(outputText) {
   try {
     const parsed = JSON.parse(outputText);
     if (Array.isArray(parsed.messages)) {
-      return parsed.messages.map((message) => String(message || "").trim()).filter(Boolean).slice(0, 3);
+      return parsed.messages.map((message) => sanitizeQuestionMarks(String(message || "").trim())).filter(Boolean).slice(0, 3);
     }
   } catch {
     // Fall through to a conservative single-bubble fallback.
   }
-  const fallback = String(outputText || "").trim();
+  const fallback = sanitizeQuestionMarks(String(outputText || "").trim());
   return fallback ? [fallback] : [];
+}
+
+function sanitizeQuestionMarks(text) {
+  const questionCount = (text.match(/\?/gu) || []).length;
+  if (questionCount <= 1) {
+    return text.replace(/\?{2,}/gu, "?");
+  }
+  return text.replace(/\?+/gu, ".");
 }
 
 async function handleAiReply(request, response) {

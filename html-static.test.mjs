@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 const html = readFileSync("index.html", "utf8");
 const app = readFileSync("app.js", "utf8");
 const css = readFileSync("styles.css", "utf8");
+const phoneFrame = readFileSync("assets/phone-frame.png");
 const spec = readFileSync("docs/superpowers/specs/2026-05-08-chat-word-guessing-game-design.md", "utf8");
 const plan = readFileSync("docs/superpowers/plans/2026-05-08-chat-word-guessing-game.md", "utf8");
 
@@ -13,6 +14,7 @@ assert.match(html, /<script src="game-core\.js"><\/script>/);
 assert.match(html, /<script src="app\.js"><\/script>/);
 
 assert.match(app, /GameCore\.createGame/);
+assert.match(app, /Math\.floor\(Math\.random\(\) \* 100000\)/);
 assert.match(app, /GameCore\.submitGuess/);
 assert.match(app, /requestAiReply/);
 assert.match(app, /\/api\/ai-reply/);
@@ -45,6 +47,9 @@ assert.match(app, /default-profile/);
 assert.doesNotMatch(app, /<strong>\$\{GameCore\.getModeConfig\(game\.mode\)\.label\}<\/strong>/);
 
 assert.match(css, /\.phone/);
+assert.match(css, /\.phone-frame-scene/);
+assert.match(css, /assets\/phone-frame\.png/);
+assert.match(css, /\.app[\s\S]*background: #000000/);
 assert.match(css, /\.bubble\.ai/);
 assert.match(css, /\.bubble\.player/);
 assert.match(css, /\.input-panel/);
@@ -67,8 +72,9 @@ assert.match(css, /\.next-button/);
 assert.match(css, /\.composer-bar[\s\S]*background: transparent/);
 assert.match(css, /\.chat-log[\s\S]*padding: 18px 14px 246px/);
 assert.doesNotMatch(css, /\.floating-choices[\s\S]*position: absolute/);
-assert.doesNotMatch(css, /background: #050505/);
 assert.match(css, /@media/);
+assert.match(css, /height: 100svh/);
+assert.ok(phoneFrame.length > 100000);
 
 assert.match(spec, /early turns/i);
 assert.match(spec, /later turns/i);

@@ -85,6 +85,14 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
 
 {
   const game = createGame("normal", 0);
+  const result = submitGuess(game, "모르겠는데?", ["아, 그거??? 아니?? 방 안에 있는 거??"]);
+  const aiText = result.messages.slice(game.messages.length + 1).map((message) => message.text).join("\n");
+  assert.doesNotMatch(aiText, /\?{2,}/);
+  assert.doesNotMatch(aiText, /\?.+\?/);
+}
+
+{
+  const game = createGame("normal", 0);
   const result = submitGuess(game, "모르겠는데?", ["아, 그그...", "아 답답해. 말은 맴도는데 딱 안 나온다."]);
   const aiMessages = result.messages.slice(game.messages.length + 1).map((message) => message.text);
   assert.match(aiMessages.join("\n"), /방 안|자연스럽게|당연해서|이름이 안 나와/);
