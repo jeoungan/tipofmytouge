@@ -63,13 +63,26 @@
 
   function renderMessages() {
     return game.messages
-      .map(
-        (message) => `
+      .map((message, index) => {
+        const time = index === 0 ? "오전 9:16" : "";
+        const avatar =
+          message.sender === "ai"
+            ? `<div class="avatar" aria-hidden="true">?</div>`
+            : "";
+        const meta =
+          time && message.sender === "ai"
+            ? `<span class="message-time">${time}</span>`
+            : "";
+        return `
           <div class="message-line ${message.sender}">
-            <div class="bubble ${message.sender}">${escapeHtml(message.text)}</div>
+            ${avatar}
+            <div class="message-stack">
+              <div class="bubble ${message.sender}">${escapeHtml(message.text)}</div>
+              ${meta}
+            </div>
           </div>
-        `
-      )
+        `;
+      })
       .join("");
   }
 
@@ -114,33 +127,44 @@
 
     if (!inputOpen) {
       return `
-        <div class="choice-bar">
+        <div class="floating-choices" aria-label="답변 선택지">
           <button class="choice-button ghost" data-action="hint">모르겠는데?</button>
           <button class="choice-button primary" data-action="answer">답변 입력</button>
+        </div>
+        <div class="composer-bar muted">
+          <button class="round-button" aria-label="추가">+</button>
+          <div class="composer-placeholder">AI가 말하는 중...</div>
+          <button class="round-button" aria-label="메뉴">#</button>
         </div>
       `;
     }
 
     return `
-      <form class="input-panel">
+      <form class="input-panel composer-bar">
+        <button class="round-button" type="button" aria-label="추가">+</button>
         <input name="guess" autocomplete="off" placeholder="메시지 입력" />
-        <button>전송</button>
+        <button class="send-button">전송</button>
       </form>
     `;
   }
 
   function renderGame() {
     app.innerHTML = `
-      <section class="phone chat-phone">
+      <section class="phone chat-phone chat-room">
         <header class="chat-top">
           <button class="icon-button" data-action="back" aria-label="모드 선택으로 돌아가기">‹</button>
           <div>
             <strong>${GameCore.getModeConfig(game.mode).label}</strong>
             <span>${renderStatusText()}</span>
           </div>
+          <div class="top-actions" aria-hidden="true">
+            <span>⌕</span>
+            <span>☰</span>
+          </div>
         </header>
         ${renderChallengeRecords()}
-        <div class="chat-log" id="chat-log">
+        <div class="chat-log" id="chat-log" aria-label="대화 내용">
+          <div class="date-chip">2026년 5월 8일 금요일</div>
           ${renderMessages()}
         </div>
         ${renderResult()}

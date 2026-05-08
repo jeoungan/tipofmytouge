@@ -19,13 +19,20 @@ assert.match(app, /답변 입력/);
 assert.match(app, /data-action="hint"/);
 assert.match(app, /data-action="answer"/);
 assert.match(app, /input-panel/);
+assert.match(app, /chat-room/);
+assert.match(app, /floating-choices/);
+assert.match(app, /composer-bar/);
+assert.match(app, /AI가 말하는 중/);
 
 assert.match(css, /\.phone/);
 assert.match(css, /\.bubble\.ai/);
 assert.match(css, /\.bubble\.player/);
-assert.match(css, /\.choice-bar/);
 assert.match(css, /\.input-panel/);
-assert.match(css, /grid-template-rows: auto auto 1fr auto/);
+assert.match(css, /\.chat-room/);
+assert.match(css, /\.floating-choices/);
+assert.match(css, /\.composer-bar/);
+assert.match(css, /background: #b7d3e9/);
+assert.doesNotMatch(css, /background: #050505/);
 assert.match(css, /@media/);
 
 console.log("html static tests passed");
