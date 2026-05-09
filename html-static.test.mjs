@@ -64,6 +64,8 @@ assert.match(css, /\.app[\s\S]*background: #000000/);
 assert.match(css, /\.intro-phone[\s\S]*background: #f8f1df/);
 assert.match(css, /\.intro-title-image/);
 assert.match(css, /\.mode-grid[\s\S]*grid-template-columns: repeat\(4, 1fr\)/);
+assert.match(css, /\.mode-grid[\s\S]*align-content: start/);
+assert.match(css, /\.mode-grid[\s\S]*padding: 58px 2px 0/);
 assert.match(css, /\.mode-card\.easy/);
 assert.match(css, /\.mode-card\.challenge/);
 assert.match(css, /\.mode-icon[\s\S]*width: 42px/);

@@ -72,11 +72,11 @@ input {
 .mode-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  align-content: center;
+  align-content: start;
   justify-items: center;
   gap: 10px;
   flex: 1;
-  padding: 8px 2px 0;
+  padding: 58px 2px 0;
 }
 
 .mode-card {
@@ -593,7 +593,7 @@ input:disabled {
 
   .mode-grid {
     gap: 8px;
-    padding: 8px 0 0;
+    padding: 52px 0 0;
   }
 
   .mode-icon {
