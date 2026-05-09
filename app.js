@@ -35,7 +35,7 @@
       <div class="phone-frame-scene">
         <section class="phone intro-phone">
           <div class="brand">
-            <h1>아, 그거 뭐라 그러더라</h1>
+            <img class="intro-title-image" src="assets/intro-title.png" alt="아, 그거 뭐라고 하더라" />
             <p>답답한 친구가<br />설명하는 걸 맞혀봐</p>
           </div>
           <div class="mode-grid">

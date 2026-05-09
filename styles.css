@@ -54,38 +54,40 @@ input {
   background: #f8f1df;
 }
 
-.brand h1 {
-  margin: 0;
-  font-size: 34px;
-  line-height: 1.12;
-  letter-spacing: 0;
+.intro-title-image {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  max-height: 96px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .brand p {
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   color: #5d5f63;
   line-height: 1.5;
 }
 
 .mode-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   align-content: center;
   justify-items: center;
-  gap: 22px 14px;
+  gap: 10px;
   flex: 1;
-  padding: 0 18px;
-  transform: translateY(-58px);
+  padding: 8px 34px 0;
 }
 
 .mode-card {
   display: grid;
-  justify-items: center;
-  gap: 7px;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  max-width: 86px;
+  max-width: 190px;
   padding: 0;
-  text-align: center;
+  text-align: left;
   border: 0;
   border-radius: 18px;
   background: transparent;
@@ -102,11 +104,11 @@ input {
 .mode-icon {
   display: grid;
   place-items: center;
-  width: 60px;
-  height: 60px;
-  border-radius: 17px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   color: #ffffff;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1;
   box-shadow: 0 9px 18px rgba(16, 24, 32, 0.18);
@@ -132,7 +134,7 @@ input {
 .mode-icon-label {
   display: grid;
   gap: 2px;
-  justify-items: center;
+  justify-items: start;
   width: 100%;
 }
 
@@ -587,25 +589,30 @@ input:disabled {
     border-radius: 22px;
   }
 
-  .brand h1 {
-    font-size: 30px;
-  }
-
   .intro-phone {
     padding: 26px 26px 18px;
   }
 
+  .intro-title-image {
+    max-width: 228px;
+    max-height: 90px;
+  }
+
   .mode-grid {
-    gap: 20px 14px;
-    padding: 0 14px;
-    transform: translateY(-52px);
+    gap: 9px;
+    padding: 8px 30px 0;
   }
 
   .mode-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    font-size: 19px;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    font-size: 14px;
+  }
+
+  .mode-card {
+    grid-template-columns: 38px 1fr;
+    max-width: 178px;
   }
 
   .mode-icon-label strong {
