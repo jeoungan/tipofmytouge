@@ -11,6 +11,7 @@ const renderYaml = readFileSync("render.yaml", "utf8");
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
 assert.match(server, /OPENAI_API_KEY/);
+assert.match(server, /cleanOpenAiApiKey/);
 assert.match(server, /https:\/\/api\.openai\.com\/v1\/responses/);
 assert.match(server, /Authorization/);
 assert.match(server, /Bearer \$\{apiKey\}/);
@@ -20,6 +21,7 @@ assert.match(server, /handleAiWord/);
 assert.match(server, /buildWordInstructions/);
 assert.match(server, /usedAnswers/);
 assert.match(server, /parseGeneratedWord/);
+assert.doesNotMatch(server, /jsonResponse\(response, 500, \{ error: error\.message/);
 assert.match(server, /Do not reuse the same clue/);
 assert.match(server, /Every non-filler response must include one concrete clue/);
 assert.match(server, /Do not sprinkle question marks/);

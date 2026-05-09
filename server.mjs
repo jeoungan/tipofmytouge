@@ -9,7 +9,7 @@ const envFile = readEnvFile();
 const host = process.env.HOST || envFile.HOST || "0.0.0.0";
 const port = Number(process.env.PORT || envFile.PORT || 3000);
 const model = process.env.OPENAI_MODEL || envFile.OPENAI_MODEL || "gpt-5.2";
-const apiKey = process.env.OPENAI_API_KEY || envFile.OPENAI_API_KEY;
+const apiKey = cleanOpenAiApiKey(process.env.OPENAI_API_KEY || envFile.OPENAI_API_KEY);
 const aiRateLimitWindowMs = Math.max(Number(process.env.AI_RATE_LIMIT_WINDOW_MS || envFile.AI_RATE_LIMIT_WINDOW_MS || 60_000), 1_000);
 const aiRateLimitMax = Math.max(Number(process.env.AI_RATE_LIMIT_MAX || envFile.AI_RATE_LIMIT_MAX || 20), 1);
 const aiRateBuckets = new Map();
@@ -34,6 +34,15 @@ function readEnvFile() {
       values[key] = value;
       return values;
     }, {});
+}
+
+function cleanOpenAiApiKey(value) {
+  const rawValue = String(value || "").trim();
+  const match = rawValue.match(/sk-(?:proj-)?[A-Za-z0-9_-]+/u);
+  if (match) {
+    return match[0];
+  }
+  return rawValue.replace(/^=/u, "").split(/\r?\n/u)[0].trim();
 }
 
 function jsonResponse(response, status, payload) {
@@ -450,7 +459,8 @@ const server = createServer(async (request, response) => {
     response.writeHead(405);
     response.end("Method not allowed");
   } catch (error) {
-    jsonResponse(response, 500, { error: error.message || "Server error" });
+    console.error(error);
+    jsonResponse(response, 500, { error: "Server error" });
   }
 });
 
