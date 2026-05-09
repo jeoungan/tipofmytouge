@@ -145,7 +145,7 @@ input {
 .mode-descriptions {
   display: grid;
   gap: 8px;
-  margin: 42px 4px 0;
+  margin: 76px 4px 0;
 }
 
 .mode-description {
@@ -160,24 +160,9 @@ input {
 }
 
 .mode-description strong {
+  color: #202124;
   font-size: 12px;
   line-height: 1.35;
-}
-
-.mode-description.easy strong {
-  color: #d96a3c;
-}
-
-.mode-description.normal strong {
-  color: #2f6f9f;
-}
-
-.mode-description.hard strong {
-  color: #565fd5;
-}
-
-.mode-description.challenge strong {
-  color: #73354a;
 }
 
 .home-dock {
@@ -637,7 +622,7 @@ input:disabled {
 
   .mode-descriptions {
     gap: 7px;
-    margin: 38px 2px 0;
+    margin: 68px 2px 0;
   }
 
   .mode-description {
