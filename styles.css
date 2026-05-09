@@ -51,16 +51,7 @@ input {
   justify-content: flex-start;
   gap: 0;
   padding: 28px;
-  background:
-    radial-gradient(circle at 78% 16%, rgba(255, 255, 255, 0.58), transparent 26%),
-    linear-gradient(180deg, #f8f1df 0%, #edf5f8 100%);
-}
-
-.brand span {
-  display: block;
-  margin-bottom: 8px;
-  color: #47606d;
-  font-size: 14px;
+  background: #f8f1df;
 }
 
 .brand h1 {
@@ -81,17 +72,17 @@ input {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-content: center;
   justify-items: center;
-  gap: 26px 20px;
+  gap: 22px 14px;
   flex: 1;
-  padding: 22px 0 6px;
+  padding: 26px 18px 10px;
 }
 
 .mode-card {
   display: grid;
   justify-items: center;
-  gap: 9px;
+  gap: 7px;
   width: 100%;
-  max-width: 112px;
+  max-width: 86px;
   padding: 0;
   text-align: center;
   border: 0;
@@ -110,11 +101,11 @@ input {
 .mode-icon {
   display: grid;
   place-items: center;
-  width: 78px;
-  height: 78px;
-  border-radius: 22px;
+  width: 60px;
+  height: 60px;
+  border-radius: 17px;
   color: #ffffff;
-  font-size: 25px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 1;
   box-shadow: 0 9px 18px rgba(16, 24, 32, 0.18);
@@ -145,13 +136,13 @@ input {
 }
 
 .mode-icon-label strong {
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.1;
 }
 
 .mode-icon-label small {
   color: #5d5f63;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.2;
 }
 
@@ -513,19 +504,19 @@ input:disabled {
   }
 
   .mode-grid {
-    gap: 22px 16px;
-    padding-top: 20px;
+    gap: 20px 14px;
+    padding: 24px 14px 10px;
   }
 
   .mode-icon {
-    width: 72px;
-    height: 72px;
-    border-radius: 20px;
-    font-size: 23px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    font-size: 19px;
   }
 
   .mode-icon-label strong {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .mode-icon-label small {
