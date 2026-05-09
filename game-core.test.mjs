@@ -49,6 +49,29 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
 }
 
 {
+  const easyGame = createGame("easy", 0);
+  const easyResult = submitGuess(easyGame, easyGame.word.answer);
+  assert.match(easyResult.messages.at(-1).text, /ㄳ|고맙다/);
+
+  const reactions = new Set();
+  for (const [mode, answer] of [
+    ["normal", "체어"],
+    ["hard", "르네상스"],
+    ["challenge", "괴델 불완전성 정리"]
+  ]) {
+    let game = createGame(mode, 0);
+    game = submitGuess(game, "아닌데");
+    const result = submitGuess(game, answer);
+    const text = result.messages.at(-1).text;
+    assert.equal(result.status, "won");
+    assert.doesNotMatch(text, /너 좀 치네/);
+    assert.doesNotMatch(text, /아 맞다! 그래/);
+    reactions.add(text);
+  }
+  assert.ok(reactions.size >= 3);
+}
+
+{
   let game = createGame("normal", 0);
   const aiReplies = [];
   for (let index = 0; index < 5; index += 1) {

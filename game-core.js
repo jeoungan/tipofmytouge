@@ -181,6 +181,49 @@
     };
   }
 
+  function pickByStage(options, game, attempts) {
+    const source = `${game.mode}:${game.word.answer}:${attempts}:${game.messages.length}`;
+    const score = Array.from(source).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return options[score % options.length];
+  }
+
+  function correctReaction(game, attempts) {
+    const reactions = {
+      easy: [
+        "ㅇㅇ ㄳ",
+        "ㅇㅋ 그거였음 ㄳ",
+        "맞네. ㄳㄳ",
+        "아 그거 맞다. ㄳ",
+        "오 맞음. 고맙다."
+      ],
+      normal: [
+        `아 맞다. ${game.word.answer}. 그래 그거였네.`,
+        `오, 맞음. ${game.word.answer}. 말하니까 바로 기억남.`,
+        `그래 그거. ${game.word.answer}. 아 속 시원하다.`,
+        `맞아, ${game.word.answer}. 야 이걸 잡네.`,
+        `${game.word.answer}. 맞다 맞다. 이제야 머리에서 빠짐.`,
+        `오케이, ${game.word.answer}. 방금 뇌가 다시 켜졌다.`
+      ],
+      hard: [
+        `어, ${game.word.answer} 맞다. 이걸 바로 끌어내네.`,
+        `${game.word.answer}. 맞음. 솔직히 이건 좀 봐줬다.`,
+        `맞아, ${game.word.answer}. 야 너 방금 좀 사람 같았다.`,
+        `그래, ${game.word.answer}. 이걸 기억해내네. 살짝 얄밉다.`,
+        `아 ${game.word.answer}. 그거였지. 음, 인정.`,
+        `정확함. ${game.word.answer}. 기대 안 했는데 맞히네.`
+      ],
+      challenge: [
+        `${game.word.answer}. 맞아. 와, 이걸 건드리네.`,
+        `어... ${game.word.answer} 맞음. 솔직히 좀 놀랐다.`,
+        `그래, ${game.word.answer}. 이건 찍은 거 아니면 꽤 무섭다.`,
+        `${game.word.answer}. 맞다. 너 방금 뭐 검색한 건 아니지?`,
+        `맞아, ${game.word.answer}. 야 이건 나도 설명하다 지쳤는데.`,
+        `오케이, ${game.word.answer}. 인정. 이번 건 네가 가져가라.`
+      ]
+    };
+    return pickByStage(reactions[game.mode] || reactions.normal, game, attempts);
+  }
+
   function isCorrectGuess(guess, word) {
     const normalizedGuess = normalizeGuess(guess);
     const answers = [word.answer, ...word.aliases].map(normalizeGuess);
@@ -341,8 +384,7 @@
         answer: game.word.answer,
         attempts: next.attempts
       };
-      next.messages.push(makeMessage("ai", "아."));
-      next.messages.push(makeMessage("ai", `아 맞다! 그래, ${game.word.answer}! ${next.attempts}번 만에 맞혔네. 야 너 좀 치네?`));
+      next.messages.push(makeMessage("ai", correctReaction(game, next.attempts)));
       if (game.mode === "challenge") {
         next.challengeRecords = [...game.challengeRecords, { answer: game.word.answer, attempts: next.attempts }];
       }
