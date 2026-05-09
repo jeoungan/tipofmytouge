@@ -41,6 +41,12 @@
           <div class="mode-grid">
             ${modeCards}
           </div>
+          <div class="home-dock" aria-label="기본 앱">
+            <span class="dock-icon phone-app" aria-hidden="true"></span>
+            <span class="dock-icon message-app" aria-hidden="true"></span>
+            <span class="dock-icon camera-app" aria-hidden="true"></span>
+            <span class="dock-icon settings-app" aria-hidden="true"></span>
+          </div>
         </section>
       </div>
     `;
