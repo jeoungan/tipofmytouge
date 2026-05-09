@@ -171,6 +171,65 @@ function buildWordInstructions() {
   ].join("\n");
 }
 
+function messagesTextFormat() {
+  return {
+    format: {
+      type: "json_schema",
+      name: "game_chat_messages",
+      strict: true,
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          messages: {
+            type: "array",
+            minItems: 1,
+            maxItems: 3,
+            items: { type: "string" }
+          }
+        },
+        required: ["messages"]
+      }
+    }
+  };
+}
+
+function wordTextFormat() {
+  return {
+    format: {
+      type: "json_schema",
+      name: "game_word",
+      strict: true,
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          word: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              answer: { type: "string" },
+              aliases: {
+                type: "array",
+                maxItems: 8,
+                items: { type: "string" }
+              },
+              clues: {
+                type: "array",
+                minItems: 5,
+                maxItems: 8,
+                items: { type: "string" }
+              }
+            },
+            required: ["answer", "aliases", "clues"]
+          }
+        },
+        required: ["word"]
+      }
+    }
+  };
+}
+
 function modeWordBrief(mode) {
   const briefs = {
     easy: "everyday object, animal, food, place, or simple concept",
@@ -324,6 +383,7 @@ async function handleAiReply(request, response) {
     body: JSON.stringify({
       model,
       instructions: buildInstructions(),
+      text: messagesTextFormat(),
       input: JSON.stringify(buildInput(payload))
     })
   });
@@ -375,6 +435,7 @@ async function handleAiWord(request, response) {
     body: JSON.stringify({
       model,
       instructions: buildWordInstructions(),
+      text: wordTextFormat(),
       input: JSON.stringify(buildWordInput(payload))
     })
   });
