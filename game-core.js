@@ -386,6 +386,39 @@
     };
   }
 
+  function createGameFromWord(mode, wordInput) {
+    const config = getModeConfig(mode);
+    if (!config) {
+      throw new Error(`Unknown mode: ${mode}`);
+    }
+
+    const word = {
+      answer: String(wordInput?.answer || "").normalize("NFC").trim(),
+      aliases: Array.isArray(wordInput?.aliases)
+        ? wordInput.aliases.map((alias) => String(alias || "").normalize("NFC").trim()).filter(Boolean)
+        : [],
+      mode,
+      clues: Array.isArray(wordInput?.clues)
+        ? wordInput.clues.map((clue) => String(clue || "").normalize("NFC").trim()).filter(Boolean)
+        : []
+    };
+
+    if (!word.answer || word.clues.length === 0) {
+      throw new Error("AI word payload is missing an answer or clues.");
+    }
+
+    return {
+      mode,
+      word,
+      status: "playing",
+      remainingReplies: config.maxReplies,
+      attempts: 0,
+      messages: [makeMessage("ai", word.clues[0])],
+      result: null,
+      challengeRecords: []
+    };
+  }
+
   function getInitialClue(game) {
     return game.messages[0];
   }
@@ -456,6 +489,7 @@
 
   global.GameCore = {
     createGame,
+    createGameFromWord,
     submitGuess,
     normalizeGuess,
     isCorrectGuess,

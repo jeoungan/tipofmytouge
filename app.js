@@ -6,6 +6,7 @@
   let inputOpen = false;
   let waitingForAi = false;
   let isComposingGuess = false;
+  let gameRequestId = 0;
   const usedAnswersByMode = new Map();
 
   function escapeHtml(value) {
@@ -24,15 +25,46 @@
     return usedAnswersByMode.get(mode);
   }
 
-  function createManagedGame(mode, previousGame = null) {
-    const usedAnswers = usedAnswersFor(mode);
-    const wordCount = GameCore.getWordsForMode(mode).length;
-    if (usedAnswers.size >= wordCount) {
-      usedAnswers.clear();
+  function applyPreviousChallengeRecords(nextGame, previousGame) {
+    if (nextGame.mode === "challenge" && previousGame?.mode === "challenge") {
+      nextGame.challengeRecords = previousGame.challengeRecords;
+    }
+    return nextGame;
+  }
+
+  async function requestAiWord(mode, usedAnswers) {
+    if (window.location.protocol === "file:") {
+      return null;
     }
 
+    try {
+      const response = await fetch("/api/ai-word", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          mode,
+          usedAnswers: Array.from(usedAnswers).slice(-80)
+        })
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      return data.word || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function createLocalManagedGame(mode, usedAnswers) {
+    const wordCount = GameCore.getWordsForMode(mode).length;
     let selectedGame = null;
     let selectedSeed = seedCounter;
+
     for (let offset = 0; offset < wordCount; offset += 1) {
       const candidateSeed = seedCounter + offset;
       const candidate = GameCore.createGame(mode, candidateSeed);
@@ -45,13 +77,66 @@
 
     selectedGame = selectedGame || GameCore.createGame(mode, seedCounter);
     seedCounter = selectedSeed + 1;
-    usedAnswers.add(selectedGame.word.answer);
+    return selectedGame;
+  }
 
-    if (mode === "challenge" && previousGame?.mode === "challenge") {
-      selectedGame.challengeRecords = previousGame.challengeRecords;
+  async function createManagedGame(mode, previousGame = null) {
+    const usedAnswers = usedAnswersFor(mode);
+    const aiWord = await requestAiWord(mode, usedAnswers);
+    let selectedGame = null;
+
+    if (aiWord?.answer && !usedAnswers.has(aiWord.answer)) {
+      try {
+        selectedGame = GameCore.createGameFromWord(mode, aiWord);
+      } catch {
+        selectedGame = null;
+      }
     }
 
-    return selectedGame;
+    selectedGame = selectedGame || createLocalManagedGame(mode, usedAnswers);
+    usedAnswers.add(selectedGame.word.answer);
+
+    return applyPreviousChallengeRecords(selectedGame, previousGame);
+  }
+
+  function renderLoadingGame(mode) {
+    app.innerHTML = `
+      <div class="phone-frame-scene">
+        <section class="phone chat-phone chat-room">
+          <header class="chat-top">
+            <button class="icon-button" data-action="back" aria-label="모드 선택으로 돌아가기">‹</button>
+            <div class="chat-title-block">
+              <strong>어휘력이 좋은 지 나쁜 지 모르겠는 놈</strong>
+              <span class="header-meta">${GameCore.getModeConfig(mode).label} · 문제 고르는 중</span>
+            </div>
+            <div class="top-actions" aria-hidden="true">
+              <span>⌕</span>
+              <span>☰</span>
+            </div>
+          </header>
+          <div class="chat-log" aria-label="대화 내용">
+            <div class="date-chip">2026년 5월 8일 금요일</div>
+            <div class="message-line ai">
+              <div class="avatar default-profile" aria-hidden="true">
+                <span class="profile-head"></span>
+                <span class="profile-body"></span>
+              </div>
+              <div class="message-stack">
+                <div class="bubble ai">아 잠깐만. 지금 머릿속에서 하나 꺼내는 중.</div>
+                <span class="message-time">오전 9:16</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    `;
+
+    app.querySelector('[data-action="back"]').addEventListener("click", returnToModePicker);
+  }
+
+  function returnToModePicker() {
+    gameRequestId += 1;
+    renderModePicker();
   }
 
   function renderModePicker(options = {}) {
@@ -155,15 +240,29 @@
     }
   }
 
-  function startGame(mode) {
+  async function startGame(mode) {
+    const requestId = ++gameRequestId;
     lastMode = mode;
-    game = createManagedGame(mode);
+    renderLoadingGame(mode);
+    const nextGame = await createManagedGame(mode);
+    if (requestId !== gameRequestId) {
+      return;
+    }
+    game = nextGame;
     inputOpen = false;
     renderGame();
   }
 
-  function nextStage() {
-    game = createManagedGame(lastMode, game);
+  async function nextStage() {
+    const requestId = ++gameRequestId;
+    const previousGame = game;
+    waitingForAi = true;
+    renderGame();
+    const nextGame = await createManagedGame(lastMode, previousGame);
+    if (requestId !== gameRequestId) {
+      return;
+    }
+    game = nextGame;
     inputOpen = false;
     waitingForAi = false;
     renderGame();
@@ -385,7 +484,7 @@
     const chatLog = app.querySelector("#chat-log");
     chatLog.scrollTop = chatLog.scrollHeight;
 
-    app.querySelector('[data-action="back"]').addEventListener("click", renderModePicker);
+    app.querySelector('[data-action="back"]').addEventListener("click", returnToModePicker);
     app.querySelector('[data-action="next"]')?.addEventListener("click", nextStage);
     app.querySelector('[data-action="hint"]')?.addEventListener("click", () => {
       submitPlayerGuess("모르겠는데?");

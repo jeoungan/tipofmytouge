@@ -3,6 +3,7 @@ import "./game-core.js";
 
 const {
   createGame,
+  createGameFromWord,
   submitGuess,
   normalizeGuess,
   getModeConfig,
@@ -14,6 +15,18 @@ const {
 assert.equal(normalizeGuess("  의자요!! "), "의자");
 assert.equal(normalizeGuess("괴델 불완전성 정리인가?"), "괴델불완전성정리");
 assert.equal(isCorrectGuess("체어", createGame("normal", 0).word), true);
+
+{
+  const generated = createGameFromWord("normal", {
+    answer: "텀블러",
+    aliases: ["보온병"],
+    clues: ["아, 그 들고 다니는 거.", "카페에서 자주 보이는 그거."]
+  });
+  assert.equal(generated.word.answer, "텀블러");
+  assert.equal(generated.word.aliases[0], "보온병");
+  assert.equal(generated.messages[0].text, "아, 그 들고 다니는 거.");
+  assert.equal(isCorrectGuess("보온병", generated.word), true);
+}
 
 assert.equal(getModeConfig("normal").maxReplies, 5);
 assert.equal(getModeConfig("hard").maxReplies, 5);

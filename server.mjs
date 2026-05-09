@@ -144,6 +144,102 @@ function buildInstructions() {
   ].join("\n");
 }
 
+function buildWordInstructions() {
+  return [
+    "You create target answers for a Korean tip-of-the-tongue chat guessing game.",
+    "Return ONLY JSON shaped like {\"word\":{\"answer\":\"...\",\"aliases\":[\"...\"],\"clues\":[\"...\",\"...\",\"...\",\"...\",\"...\"]}}.",
+    "The answer must be a concrete word, name, object, concept, brand, person, place, work, theory, technology, or term that can be guessed.",
+    "Do not choose any item in usedAnswers, including close spelling variants.",
+    "Easy: common everyday words almost anyone knows.",
+    "Normal: common words or concepts a normal person can name.",
+    "Hard: somewhat harder general knowledge, famous brands, terms, works, places, or concepts.",
+    "Challenge: difficult expert-ish knowledge, but still a real named thing that can be answered.",
+    "Write all clues in Korean casual speech from the friend who knows the answer but suddenly cannot say it.",
+    "Clue 1 must be broad and flustered. Each later clue must add a new concrete detail.",
+    "Do not reveal the answer or aliases inside the clues.",
+    "Do not say meta phrases like '정답은', '힌트', '정보를 풀게', or '문제'.",
+    "Use five or more clues. Keep each clue short enough for a chat bubble."
+  ].join("\n");
+}
+
+function modeWordBrief(mode) {
+  const briefs = {
+    easy: "everyday object, animal, food, place, or simple concept",
+    normal: "common object, vehicle, appliance, tool, public place, or everyday concept",
+    hard: "famous brand, cultural term, historical period, technology, science term, work, or well-known person",
+    challenge: "advanced theorem, scientific concept, historical document, niche technology, philosophy term, artwork, or named phenomenon"
+  };
+  return briefs[mode] || briefs.normal;
+}
+
+function sanitizeUsedAnswers(usedAnswers) {
+  if (!Array.isArray(usedAnswers)) {
+    return [];
+  }
+  return usedAnswers.map((answer) => String(answer || "").normalize("NFC").trim()).filter(Boolean).slice(-80);
+}
+
+function buildWordInput(payload) {
+  return {
+    mode: payload.mode,
+    difficulty: modeWordBrief(payload.mode),
+    usedAnswers: sanitizeUsedAnswers(payload.usedAnswers)
+  };
+}
+
+function parseJsonObject(outputText) {
+  const text = String(outputText || "").trim();
+  try {
+    return JSON.parse(text);
+  } catch {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start !== -1 && end > start) {
+      return JSON.parse(text.slice(start, end + 1));
+    }
+    throw new Error("Model did not return JSON.");
+  }
+}
+
+function normalizeAnswerKey(value) {
+  return String(value || "")
+    .normalize("NFC")
+    .toLocaleLowerCase("ko-KR")
+    .replace(/[^\p{L}\p{N}]/gu, "");
+}
+
+function parseGeneratedWord(outputText, payload) {
+  const parsed = parseJsonObject(outputText);
+  const rawWord = parsed.word || parsed;
+  const answer = String(rawWord.answer || "").normalize("NFC").trim();
+  const aliases = Array.isArray(rawWord.aliases)
+    ? rawWord.aliases.map((alias) => String(alias || "").normalize("NFC").trim()).filter(Boolean).slice(0, 8)
+    : [];
+  const clues = Array.isArray(rawWord.clues)
+    ? rawWord.clues.map((clue) => sanitizeQuestionMarks(String(clue || "").normalize("NFC").trim())).filter(Boolean).slice(0, 8)
+    : [];
+  const answerKey = normalizeAnswerKey(answer);
+  const usedKeys = new Set(sanitizeUsedAnswers(payload.usedAnswers).map(normalizeAnswerKey));
+
+  if (!answer || answer.length > 60 || usedKeys.has(answerKey) || clues.length < 5) {
+    throw new Error("Generated word payload is incomplete or repeated.");
+  }
+
+  const blockedKeys = [answer, ...aliases].map(normalizeAnswerKey).filter((key) => key.length >= 2);
+  if (clues.some((clue) => {
+    const clueKey = normalizeAnswerKey(clue);
+    return blockedKeys.some((blockedKey) => clueKey.includes(blockedKey));
+  })) {
+    throw new Error("Generated clues revealed the answer.");
+  }
+
+  return {
+    answer,
+    aliases,
+    clues
+  };
+}
+
 function fallbackClueForPayload(payload) {
   const clues = Array.isArray(payload.word?.clues) ? payload.word.clues : [];
   if (clues.length === 0) {
@@ -239,6 +335,62 @@ async function handleAiReply(request, response) {
   });
 }
 
+async function handleAiWord(request, response) {
+  const rateLimit = isAiRateLimited(request);
+  if (rateLimit.limited) {
+    rateLimitResponse(response, rateLimit.retryAfter);
+    return;
+  }
+
+  if (!apiKey) {
+    jsonResponse(response, 503, {
+      error: "OPENAI_API_KEY is not configured. The game will use local fallback words."
+    });
+    return;
+  }
+
+  let payload;
+  try {
+    payload = await readJsonBody(request);
+  } catch {
+    jsonResponse(response, 400, { error: "Invalid JSON body." });
+    return;
+  }
+
+  const openAiResponse = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model,
+      instructions: buildWordInstructions(),
+      input: JSON.stringify(buildWordInput(payload))
+    })
+  });
+
+  if (!openAiResponse.ok) {
+    const detail = await openAiResponse.text();
+    jsonResponse(response, 502, {
+      error: "OpenAI word request failed.",
+      detail: detail.slice(0, 500)
+    });
+    return;
+  }
+
+  const data = await openAiResponse.json();
+  try {
+    jsonResponse(response, 200, {
+      word: parseGeneratedWord(data.output_text || "", payload)
+    });
+  } catch (error) {
+    jsonResponse(response, 502, {
+      error: error.message || "Invalid generated word."
+    });
+  }
+}
+
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -285,6 +437,10 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === "POST" && request.url === "/api/ai-reply") {
       await handleAiReply(request, response);
+      return;
+    }
+    if (request.method === "POST" && request.url === "/api/ai-word") {
+      await handleAiWord(request, response);
       return;
     }
     if (request.method === "GET") {
