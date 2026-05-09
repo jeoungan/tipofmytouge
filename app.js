@@ -5,6 +5,7 @@
   let seedCounter = Math.floor(Math.random() * 100000);
   let inputOpen = false;
   let waitingForAi = false;
+  let isComposingGuess = false;
 
   function escapeHtml(value) {
     return String(value)
@@ -187,6 +188,15 @@
     renderGame();
   }
 
+  function submitGuessFromForm(form) {
+    const input = form.elements.guess;
+    const guess = String(input.value || "").normalize("NFC").trim();
+    if (!guess) {
+      return;
+    }
+    submitPlayerGuess(guess);
+  }
+
   function renderMessages() {
     return game.messages
       .map((message, index) => {
@@ -285,6 +295,12 @@
         <input
           name="guess"
           autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          inputmode="text"
+          enterkeyhint="send"
+          lang="ko"
           placeholder="${waitingForAi ? "AI가 말 고르는 중..." : inputOpen ? "메시지 입력" : "AI가 말하는 중..."}"
           ${inputOpen && game.status === "playing" && !waitingForAi ? "" : "disabled"}
         />
@@ -344,17 +360,31 @@
     });
 
     const form = app.querySelector(".input-panel");
+    const guessInput = app.querySelector(".input-panel input");
+    guessInput?.addEventListener("compositionstart", () => {
+      isComposingGuess = true;
+    });
+    guessInput?.addEventListener("compositionend", () => {
+      isComposingGuess = false;
+    });
     form?.addEventListener("submit", (event) => {
       event.preventDefault();
-      const input = form.elements.guess;
-      const guess = input.value.trim();
-      if (!guess) {
+      if (waitingForAi || !inputOpen || game.status !== "playing") {
         return;
       }
-      submitPlayerGuess(guess);
+      form.elements.guess.blur();
+      window.setTimeout(() => {
+        if (isComposingGuess) {
+          window.setTimeout(() => submitGuessFromForm(form), 40);
+          return;
+        }
+        submitGuessFromForm(form);
+      }, 0);
     });
 
-    app.querySelector(".input-panel input")?.focus();
+    if (inputOpen && game.status === "playing" && !waitingForAi) {
+      guessInput?.focus({ preventScroll: true });
+    }
   }
 
   renderModePicker({ withOpening: true });
