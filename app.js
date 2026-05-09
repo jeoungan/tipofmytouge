@@ -35,8 +35,9 @@
       <div class="phone-frame-scene">
         <section class="phone intro-phone">
           <div class="brand">
-            <img class="brand-logo" src="assets/logo.png" alt="아, 그거 뭐라고 하더라" />
-            <p>작게 답답한 친구가 설명하는 걸 맞혀봐</p>
+            <span>OpenAI 말고도 일단</span>
+            <h1>아, 그거 뭐라 그러더라</h1>
+            <p>말을 못 하는 친구가 설명하는 걸 맞혀봐.</p>
           </div>
           <div class="mode-grid">
             ${modeCards}
