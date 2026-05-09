@@ -16,7 +16,14 @@
   }
 
   function renderModePicker() {
-    const modeCards = GameCore.modes()
+    const modes = GameCore.modes();
+    const modeDescriptions = {
+      easy: "장난? 장난은 계속 말해주마.",
+      normal: "이게 진짜니까 딱 5번만 설명한다.",
+      hard: "니가 5번 안에 맞출 수 있을까?",
+      challenge: "계속 말해도 너는 못 맞출껄?"
+    };
+    const modeCards = modes
       .map((item) => {
         const iconText = item.label === "Challenge" ? "Ch" : item.label.slice(0, 1);
         return `
@@ -29,6 +36,16 @@
         `;
       })
       .join("");
+    const modeDetails = modes
+      .map(
+        (item) => `
+          <div class="mode-description ${item.mode}">
+            <strong>${escapeHtml(item.label)}</strong>
+            <span>${escapeHtml(modeDescriptions[item.mode])}</span>
+          </div>
+        `
+      )
+      .join("");
 
     app.innerHTML = `
       <div class="phone-frame-scene">
@@ -39,6 +56,9 @@
           </div>
           <div class="mode-grid">
             ${modeCards}
+          </div>
+          <div class="mode-descriptions">
+            ${modeDetails}
           </div>
           <div class="home-dock" aria-label="기본 앱">
             <span class="dock-icon phone-app" aria-hidden="true"></span>

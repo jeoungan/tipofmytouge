@@ -75,7 +75,7 @@ input {
   align-content: start;
   justify-items: center;
   gap: 10px;
-  flex: 1;
+  flex: 0 0 auto;
   padding: 58px 2px 0;
 }
 
@@ -142,6 +142,44 @@ input {
   line-height: 1.1;
 }
 
+.mode-descriptions {
+  display: grid;
+  gap: 8px;
+  margin: 42px 4px 0;
+}
+
+.mode-description {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 8px;
+  align-items: start;
+  color: #444b55;
+  font-size: 12px;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.mode-description strong {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.mode-description.easy strong {
+  color: #d96a3c;
+}
+
+.mode-description.normal strong {
+  color: #2f6f9f;
+}
+
+.mode-description.hard strong {
+  color: #565fd5;
+}
+
+.mode-description.challenge strong {
+  color: #73354a;
+}
+
 .home-dock {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -151,6 +189,7 @@ input {
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.62);
   box-shadow: 0 8px 24px rgba(16, 24, 32, 0.1);
+  margin-top: auto;
 }
 
 .dock-icon {
@@ -594,6 +633,17 @@ input:disabled {
   .mode-grid {
     gap: 8px;
     padding: 52px 0 0;
+  }
+
+  .mode-descriptions {
+    gap: 7px;
+    margin: 38px 2px 0;
+  }
+
+  .mode-description {
+    grid-template-columns: 68px 1fr;
+    gap: 7px;
+    font-size: 11px;
   }
 
   .mode-icon {
