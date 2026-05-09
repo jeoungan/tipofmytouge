@@ -71,23 +71,22 @@ input {
 
 .mode-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(4, 1fr);
   align-content: center;
   justify-items: center;
   gap: 10px;
   flex: 1;
-  padding: 8px 34px 0;
+  padding: 8px 2px 0;
 }
 
 .mode-card {
   display: grid;
-  grid-template-columns: 42px 1fr;
-  align-items: center;
-  gap: 10px;
+  justify-items: center;
+  gap: 6px;
   width: 100%;
-  max-width: 190px;
+  max-width: 48px;
   padding: 0;
-  text-align: left;
+  text-align: center;
   border: 0;
   border-radius: 18px;
   background: transparent;
@@ -134,19 +133,13 @@ input {
 .mode-icon-label {
   display: grid;
   gap: 2px;
-  justify-items: start;
+  justify-items: center;
   width: 100%;
 }
 
 .mode-icon-label strong {
   font-size: 12px;
   line-height: 1.1;
-}
-
-.mode-icon-label small {
-  color: #5d5f63;
-  font-size: 10px;
-  line-height: 1.2;
 }
 
 .home-dock {
@@ -599,8 +592,8 @@ input:disabled {
   }
 
   .mode-grid {
-    gap: 9px;
-    padding: 8px 30px 0;
+    gap: 8px;
+    padding: 8px 0 0;
   }
 
   .mode-icon {
@@ -611,16 +604,11 @@ input:disabled {
   }
 
   .mode-card {
-    grid-template-columns: 38px 1fr;
-    max-width: 178px;
+    max-width: 44px;
   }
 
   .mode-icon-label strong {
     font-size: 12px;
-  }
-
-  .mode-icon-label small {
-    font-size: 10px;
   }
 
   .home-dock {

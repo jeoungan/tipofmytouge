@@ -20,11 +20,10 @@
       .map((item) => {
         const iconText = item.label === "Challenge" ? "Ch" : item.label.slice(0, 1);
         return `
-          <button class="mode-card ${item.mode}" data-mode="${item.mode}" aria-label="${escapeHtml(item.label)} ${escapeHtml(item.subtitle)}">
+          <button class="mode-card ${item.mode}" data-mode="${item.mode}" aria-label="${escapeHtml(item.label)}">
             <span class="mode-icon" aria-hidden="true">${escapeHtml(iconText)}</span>
             <span class="mode-icon-label">
               <strong>${escapeHtml(item.label)}</strong>
-              <small>${escapeHtml(item.subtitle)}</small>
             </span>
           </button>
         `;
