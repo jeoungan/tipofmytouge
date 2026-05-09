@@ -48,10 +48,12 @@ input {
 .intro-phone {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 30px;
+  justify-content: flex-start;
+  gap: 0;
   padding: 28px;
-  background: #f8f1df;
+  background:
+    radial-gradient(circle at 78% 16%, rgba(255, 255, 255, 0.58), transparent 26%),
+    linear-gradient(180deg, #f8f1df 0%, #edf5f8 100%);
 }
 
 .brand span {
@@ -76,33 +78,81 @@ input {
 
 .mode-grid {
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  justify-items: center;
+  gap: 26px 20px;
+  flex: 1;
+  padding: 22px 0 6px;
 }
 
 .mode-card {
   display: grid;
-  gap: 5px;
+  justify-items: center;
+  gap: 9px;
   width: 100%;
-  padding: 16px;
-  text-align: left;
-  border: 1px solid rgba(32, 33, 36, 0.16);
-  border-radius: 8px;
-  background: #ffffff;
+  max-width: 112px;
+  padding: 0;
+  text-align: center;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
   color: #202124;
   cursor: pointer;
 }
 
-.mode-card:hover {
-  border-color: #2f6f9f;
+.mode-card:hover .mode-icon,
+.mode-card:focus-visible .mode-icon {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(16, 24, 32, 0.22);
 }
 
-.mode-card strong {
-  font-size: 18px;
+.mode-icon {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  border-radius: 22px;
+  color: #ffffff;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 9px 18px rgba(16, 24, 32, 0.18);
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-.mode-card span {
-  color: #666b73;
+.mode-card.easy .mode-icon {
+  background: linear-gradient(135deg, #ffcf5c, #f07662);
+}
+
+.mode-card.normal .mode-icon {
+  background: linear-gradient(135deg, #56c6a9, #2f6f9f);
+}
+
+.mode-card.hard .mode-icon {
+  background: linear-gradient(135deg, #7287ff, #513c9d);
+}
+
+.mode-card.challenge .mode-icon {
+  background: linear-gradient(135deg, #242a35, #a44759);
+}
+
+.mode-icon-label {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  width: 100%;
+}
+
+.mode-icon-label strong {
   font-size: 14px;
+  line-height: 1.1;
+}
+
+.mode-icon-label small {
+  color: #5d5f63;
+  font-size: 11px;
+  line-height: 1.2;
 }
 
 .chat-phone {
@@ -456,5 +506,29 @@ input:disabled {
 
   .brand h1 {
     font-size: 30px;
+  }
+
+  .intro-phone {
+    padding: 26px;
+  }
+
+  .mode-grid {
+    gap: 22px 16px;
+    padding-top: 20px;
+  }
+
+  .mode-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    font-size: 23px;
+  }
+
+  .mode-icon-label strong {
+    font-size: 13px;
+  }
+
+  .mode-icon-label small {
+    font-size: 10px;
   }
 }
