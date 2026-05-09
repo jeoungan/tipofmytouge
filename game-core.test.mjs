@@ -6,6 +6,7 @@ const {
   submitGuess,
   normalizeGuess,
   getModeConfig,
+  getWordsForMode,
   getInitialClue,
   isCorrectGuess
 } = globalThis.GameCore;
@@ -23,9 +24,12 @@ assert.equal(getModeConfig("challenge").maxReplies, null);
   const easyAnswers = new Set([0, 1, 2].map((index) => createGame("easy", index).word.answer));
   const normalAnswers = new Set([0, 1, 2].map((index) => createGame("normal", index).word.answer));
   const hardAnswers = new Set([0, 1, 2].map((index) => createGame("hard", index).word.answer));
+  const challengeAnswers = new Set([0, 1, 2].map((index) => createGame("challenge", index).word.answer));
   assert.ok(easyAnswers.size >= 3);
   assert.ok(normalAnswers.size >= 3);
   assert.ok(hardAnswers.size >= 3);
+  assert.ok(challengeAnswers.size >= 3);
+  assert.ok(getWordsForMode("challenge").length >= 3);
   assert.deepEqual([...easyAnswers], ["우산", "고양이", "선글라스"]);
   assert.deepEqual([...normalAnswers], ["의자", "자전거", "엘리베이터"]);
   assert.deepEqual([...hardAnswers], ["르네상스", "블루투스", "테슬라"]);

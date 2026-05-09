@@ -6,6 +6,7 @@
   let inputOpen = false;
   let waitingForAi = false;
   let isComposingGuess = false;
+  const usedAnswersByMode = new Map();
 
   function escapeHtml(value) {
     return String(value)
@@ -14,6 +15,43 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+  }
+
+  function usedAnswersFor(mode) {
+    if (!usedAnswersByMode.has(mode)) {
+      usedAnswersByMode.set(mode, new Set());
+    }
+    return usedAnswersByMode.get(mode);
+  }
+
+  function createManagedGame(mode, previousGame = null) {
+    const usedAnswers = usedAnswersFor(mode);
+    const wordCount = GameCore.getWordsForMode(mode).length;
+    if (usedAnswers.size >= wordCount) {
+      usedAnswers.clear();
+    }
+
+    let selectedGame = null;
+    let selectedSeed = seedCounter;
+    for (let offset = 0; offset < wordCount; offset += 1) {
+      const candidateSeed = seedCounter + offset;
+      const candidate = GameCore.createGame(mode, candidateSeed);
+      if (!usedAnswers.has(candidate.word.answer)) {
+        selectedGame = candidate;
+        selectedSeed = candidateSeed;
+        break;
+      }
+    }
+
+    selectedGame = selectedGame || GameCore.createGame(mode, seedCounter);
+    seedCounter = selectedSeed + 1;
+    usedAnswers.add(selectedGame.word.answer);
+
+    if (mode === "challenge" && previousGame?.mode === "challenge") {
+      selectedGame.challengeRecords = previousGame.challengeRecords;
+    }
+
+    return selectedGame;
   }
 
   function renderModePicker(options = {}) {
@@ -119,15 +157,13 @@
 
   function startGame(mode) {
     lastMode = mode;
-    game = GameCore.createGame(mode, seedCounter);
-    seedCounter += 1;
+    game = createManagedGame(mode);
     inputOpen = false;
     renderGame();
   }
 
   function nextStage() {
-    game = GameCore.createGame(lastMode, seedCounter);
-    seedCounter += 1;
+    game = createManagedGame(lastMode, game);
     inputOpen = false;
     waitingForAi = false;
     renderGame();
