@@ -25,6 +25,8 @@ assert.match(server, /json_schema/);
 assert.match(server, /game_word/);
 assert.match(server, /usedAnswers/);
 assert.match(server, /parseGeneratedWord/);
+assert.match(server, /extractResponseText/);
+assert.match(server, /data\?\.output/);
 assert.doesNotMatch(server, /jsonResponse\(response, 500, \{ error: error\.message/);
 assert.match(server, /Do not reuse the same clue/);
 assert.match(server, /Every non-filler response must include one concrete clue/);

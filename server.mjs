@@ -269,6 +269,27 @@ function parseJsonObject(outputText) {
   }
 }
 
+function extractResponseText(data) {
+  if (typeof data?.output_text === "string" && data.output_text.trim()) {
+    return data.output_text;
+  }
+
+  const parts = [];
+  for (const item of Array.isArray(data?.output) ? data.output : []) {
+    for (const content of Array.isArray(item.content) ? item.content : []) {
+      if (typeof content.text === "string") {
+        parts.push(content.text);
+      } else if (typeof content.output_text === "string") {
+        parts.push(content.output_text);
+      } else if (content.parsed && typeof content.parsed === "object") {
+        parts.push(JSON.stringify(content.parsed));
+      }
+    }
+  }
+
+  return parts.join("\n").trim();
+}
+
 function normalizeAnswerKey(value) {
   return String(value || "")
     .normalize("NFC")
@@ -398,7 +419,7 @@ async function handleAiReply(request, response) {
   }
 
   const data = await openAiResponse.json();
-  const messages = parseModelMessages(data.output_text || "");
+  const messages = parseModelMessages(extractResponseText(data));
   jsonResponse(response, 200, {
     messages: messages.length > 0 ? messages : ["아, 그그...", fallbackClueForPayload(payload)]
   });
@@ -452,7 +473,7 @@ async function handleAiWord(request, response) {
   const data = await openAiResponse.json();
   try {
     jsonResponse(response, 200, {
-      word: parseGeneratedWord(data.output_text || "", payload)
+      word: parseGeneratedWord(extractResponseText(data), payload)
     });
   } catch (error) {
     jsonResponse(response, 502, {
