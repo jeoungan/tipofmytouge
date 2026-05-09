@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: tipofmytouge
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: OPENAI_MODEL
+        value: gpt-5.2
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: AI_RATE_LIMIT_WINDOW_MS
+        value: "60000"
+      - key: AI_RATE_LIMIT_MAX
+        value: "20"

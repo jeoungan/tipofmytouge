@@ -5,9 +5,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
-const port = Number(process.env.PORT || readEnvFile().PORT || 3000);
-const model = process.env.OPENAI_MODEL || readEnvFile().OPENAI_MODEL || "gpt-5.2";
-const apiKey = process.env.OPENAI_API_KEY || readEnvFile().OPENAI_API_KEY;
+const envFile = readEnvFile();
+const host = process.env.HOST || envFile.HOST || "0.0.0.0";
+const port = Number(process.env.PORT || envFile.PORT || 3000);
+const model = process.env.OPENAI_MODEL || envFile.OPENAI_MODEL || "gpt-5.2";
+const apiKey = process.env.OPENAI_API_KEY || envFile.OPENAI_API_KEY;
+const aiRateLimitWindowMs = Math.max(Number(process.env.AI_RATE_LIMIT_WINDOW_MS || envFile.AI_RATE_LIMIT_WINDOW_MS || 60_000), 1_000);
+const aiRateLimitMax = Math.max(Number(process.env.AI_RATE_LIMIT_MAX || envFile.AI_RATE_LIMIT_MAX || 20), 1);
+const aiRateBuckets = new Map();
 
 function readEnvFile() {
   const envPath = path.join(rootDir, ".env");
@@ -58,6 +63,55 @@ function readJsonBody(request) {
     });
     request.on("error", reject);
   });
+}
+
+function clientIp(request) {
+  const forwardedFor = request.headers["x-forwarded-for"];
+  if (typeof forwardedFor === "string" && forwardedFor.trim()) {
+    return forwardedFor.split(",")[0].trim();
+  }
+  return request.socket.remoteAddress || "unknown";
+}
+
+function isAiRateLimited(request) {
+  const now = Date.now();
+  for (const [ip, bucket] of aiRateBuckets) {
+    if (now >= bucket.resetAt) {
+      aiRateBuckets.delete(ip);
+    }
+  }
+
+  const ip = clientIp(request);
+  const current = aiRateBuckets.get(ip);
+
+  if (!current || now >= current.resetAt) {
+    aiRateBuckets.set(ip, {
+      count: 1,
+      resetAt: now + aiRateLimitWindowMs
+    });
+    return { limited: false };
+  }
+
+  if (current.count >= aiRateLimitMax) {
+    return {
+      limited: true,
+      retryAfter: Math.max(Math.ceil((current.resetAt - now) / 1000), 1)
+    };
+  }
+
+  current.count += 1;
+  return { limited: false };
+}
+
+function rateLimitResponse(response, retryAfter) {
+  response.writeHead(429, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store",
+    "Retry-After": String(retryAfter)
+  });
+  response.end(JSON.stringify({
+    error: "Too many AI requests. Wait a bit and try again."
+  }));
 }
 
 function trimHistory(history) {
@@ -135,6 +189,12 @@ function sanitizeQuestionMarks(text) {
 }
 
 async function handleAiReply(request, response) {
+  const rateLimit = isAiRateLimited(request);
+  if (rateLimit.limited) {
+    rateLimitResponse(response, rateLimit.retryAfter);
+    return;
+  }
+
   if (!apiKey) {
     jsonResponse(response, 503, {
       error: "OPENAI_API_KEY is not configured. Create .env from .env.example and restart the server."
@@ -219,6 +279,10 @@ async function serveStatic(request, response) {
 
 const server = createServer(async (request, response) => {
   try {
+    if (request.method === "GET" && request.url === "/healthz") {
+      jsonResponse(response, 200, { ok: true });
+      return;
+    }
     if (request.method === "POST" && request.url === "/api/ai-reply") {
       await handleAiReply(request, response);
       return;
@@ -234,8 +298,8 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, () => {
-  console.log(`Game server running at http://localhost:${port}`);
+server.listen(port, host, () => {
+  console.log(`Game server running at http://${host}:${port}`);
   if (!apiKey) {
     console.log("OPENAI_API_KEY is missing. The game will use local fallback replies.");
   }
