@@ -184,6 +184,7 @@ const mimeTypes = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".mjs": "text/javascript; charset=utf-8",
+  ".mp4": "video/mp4",
   ".png": "image/png"
 };
 

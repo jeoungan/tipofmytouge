@@ -15,7 +15,8 @@
       .replaceAll("'", "&#039;");
   }
 
-  function renderModePicker() {
+  function renderModePicker(options = {}) {
+    const withOpening = options.withOpening === true;
     const modes = GameCore.modes();
     const modeDescriptions = {
       easy: "장난? 장난은 계속 말해주마.",
@@ -48,7 +49,16 @@
       .join("");
 
     app.innerHTML = `
-      <div class="phone-frame-scene">
+      ${
+        withOpening
+          ? `
+            <div class="opening-screen" aria-hidden="true">
+              <video class="opening-video" src="assets/opening.mp4" autoplay muted playsinline preload="auto"></video>
+            </div>
+          `
+          : ""
+      }
+      <div class="phone-frame-scene ${withOpening ? "phone-frame-scene--behind-opening" : ""}">
         <section class="phone intro-phone">
           <div class="brand">
             <img class="intro-title-image" src="assets/intro-title.png" alt="아, 그거 뭐라고 하더라" />
@@ -70,11 +80,40 @@
       </div>
     `;
 
+    if (withOpening) {
+      attachOpeningTransition();
+    }
+
     app.querySelectorAll(".mode-card").forEach((button) => {
       button.addEventListener("click", () => {
         startGame(button.dataset.mode);
       });
     });
+  }
+
+  function attachOpeningTransition() {
+    const opening = app.querySelector(".opening-screen");
+    const video = app.querySelector(".opening-video");
+    const scene = app.querySelector(".phone-frame-scene");
+    if (!opening || !video || !scene) {
+      return;
+    }
+
+    const finishOpening = () => {
+      opening.classList.add("opening-screen--done");
+      scene.classList.add("phone-frame-scene--revealed");
+      window.setTimeout(() => {
+        opening.remove();
+      }, 720);
+    };
+
+    video.addEventListener("ended", finishOpening, { once: true });
+    video.addEventListener("error", finishOpening, { once: true });
+
+    const playRequest = video.play();
+    if (playRequest) {
+      playRequest.catch(finishOpening);
+    }
   }
 
   function startGame(mode) {
@@ -318,5 +357,5 @@
     app.querySelector(".input-panel input")?.focus();
   }
 
-  renderModePicker();
+  renderModePicker({ withOpening: true });
 })();

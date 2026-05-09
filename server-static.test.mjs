@@ -21,6 +21,7 @@ assert.match(server, /sanitizeQuestionMarks/);
 assert.match(server, /fallbackClue/);
 assert.match(server, /short filler/);
 assert.match(server, /tip-of-the-tongue/);
+assert.match(server, /"\.mp4": "video\/mp4"/);
 
 assert.match(app, /\/api\/ai-reply/);
 assert.match(app, /requestAiReply/);

@@ -33,6 +33,43 @@ input {
   background: url("assets/phone-frame.png") center / contain no-repeat;
 }
 
+.phone-frame-scene--behind-opening {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 650ms ease, transform 650ms ease;
+}
+
+.phone-frame-scene--revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.opening-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000000;
+}
+
+.opening-video {
+  width: min(100vw, 900px, 100svh);
+  height: min(100vw, 900px, 100svh);
+  object-fit: contain;
+  transition: opacity 650ms ease, transform 650ms ease;
+}
+
+.opening-screen--done {
+  pointer-events: none;
+}
+
+.opening-screen--done .opening-video {
+  opacity: 0;
+  transform: scale(1.04);
+}
+
 .phone {
   position: absolute;
   left: 30.4%;
