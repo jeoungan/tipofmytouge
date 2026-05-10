@@ -2,6 +2,7 @@
   color: #202124;
   background: #000000;
   font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --keyboard-inset: 0px;
 }
 
 * {
@@ -724,14 +725,14 @@ input:disabled {
   }
 
   .chat-log {
-    padding: 18px 14px calc(218px + env(safe-area-inset-bottom));
+    padding: 18px 14px calc(218px + env(safe-area-inset-bottom) + var(--keyboard-inset));
   }
 
   .control-deck {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: var(--keyboard-inset);
     min-height: 146px;
     padding: 0 14px max(12px, calc(env(safe-area-inset-bottom) + 10px));
   }

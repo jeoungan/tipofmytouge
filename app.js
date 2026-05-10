@@ -18,6 +18,21 @@
       .replaceAll("'", "&#039;");
   }
 
+  function updateKeyboardInset() {
+    const viewport = window.visualViewport;
+    const inset = viewport
+      ? Math.max(0, Math.round(window.innerHeight - viewport.height - viewport.offsetTop))
+      : 0;
+    document.documentElement.style.setProperty("--keyboard-inset", `${inset}px`);
+  }
+
+  function installKeyboardInsetTracking() {
+    updateKeyboardInset();
+    window.visualViewport?.addEventListener("resize", updateKeyboardInset);
+    window.visualViewport?.addEventListener("scroll", updateKeyboardInset);
+    window.addEventListener("resize", updateKeyboardInset);
+  }
+
   function usedAnswersFor(mode) {
     if (!usedAnswersByMode.has(mode)) {
       usedAnswersByMode.set(mode, new Set());
@@ -522,5 +537,6 @@
     }
   }
 
+  installKeyboardInsetTracking();
   renderModePicker({ withOpening: true });
 })();
